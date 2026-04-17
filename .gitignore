@@ -1,0 +1,20 @@
+# Fichiers générés par Flex & Bison
+lex.yy.c
+langage1.tab.c
+langage1.tab.h
+
+# Exécutable
+nutrilang
+langage1
+
+# Environnement virtuel Python
+web-ide/venv/
+
+# Fichiers temporaires
+*.o
+*.exe
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log

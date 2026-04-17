@@ -1,0 +1,1351 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NutriLang Studio — Coach Nutritionnel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600&family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════════
+   RESET & ROOT
+═══════════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  /* Backgrounds */
+  --bg-base:       #080a0e;
+  --bg-surface:    #0d1017;
+  --bg-panel:      #111520;
+  --bg-card:       #161b27;
+  --bg-hover:      #1c2233;
+  --bg-input:      #0d1017;
+
+  /* Brand / Accent */
+  --accent:        #00e676;
+  --accent-dim:    #00c853;
+  --accent-faint:  rgba(0, 230, 118, 0.06);
+  --accent-glow:   rgba(0, 230, 118, 0.15);
+  --accent-border: rgba(0, 230, 118, 0.22);
+
+  /* Semantic */
+  --blue:    #4fc3f7;
+  --purple:  #b39ddb;
+  --amber:   #ffca28;
+  --red:     #ef5350;
+  --teal:    #4db6ac;
+
+  /* Text */
+  --text-primary:   #e8ecf3;
+  --text-secondary: #8892a4;
+  --text-muted:     #4a5568;
+  --text-faint:     #2d3748;
+
+  /* Borders */
+  --border:        rgba(255,255,255,0.06);
+  --border-strong: rgba(255,255,255,0.11);
+  --border-accent: var(--accent-border);
+
+  /* Fonts */
+  --font-ui:   'DM Sans', system-ui, sans-serif;
+  --font-head: 'Syne', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+
+  /* Spacing */
+  --r-sm: 5px;
+  --r:    8px;
+  --r-lg: 12px;
+  --r-xl: 16px;
+}
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+  background: var(--bg-base);
+  color: var(--text-primary);
+  font-family: var(--font-ui);
+  font-size: 13px;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ═══════════════════════════════════════════════
+   APP LAYOUT
+═══════════════════════════════════════════════ */
+.app {
+  display: grid;
+  grid-template-rows: 58px 34px 1fr;
+  height: 100vh;
+  max-height: 100vh;
+}
+
+/* ═══════════════════════════════════════════════
+   TOPBAR
+═══════════════════════════════════════════════ */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border-strong);
+  flex-shrink: 0;
+  gap: 16px;
+  position: relative;
+}
+
+/* subtle top-accent line */
+.topbar::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, transparent 0%, var(--accent-dim) 30%, var(--accent) 50%, var(--accent-dim) 70%, transparent 100%);
+  opacity: 0.7;
+}
+
+/* Brand */
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  flex-shrink: 0;
+}
+
+.brand-logo {
+  width: 34px; height: 34px;
+  border-radius: var(--r);
+  background: linear-gradient(135deg, #00e676 0%, #00b248 100%);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px;
+  box-shadow: 0 0 20px rgba(0,230,118,0.2);
+  flex-shrink: 0;
+}
+
+.brand-text { display: flex; flex-direction: column; gap: 1px; }
+.brand-name {
+  font-family: var(--font-head);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.3px;
+  line-height: 1;
+}
+.brand-sub {
+  font-size: 10px;
+  color: var(--text-muted);
+  letter-spacing: 0.3px;
+}
+
+/* Tabs */
+.tabs {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.tab {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 5px 14px;
+  border-radius: var(--r-sm);
+  font-size: 12px;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.15s;
+  border: 1px solid transparent;
+  font-family: var(--font-mono);
+}
+
+.tab.active {
+  background: var(--bg-card);
+  border-color: var(--border-strong);
+  color: var(--text-secondary);
+}
+
+.tab-indicator {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 6px var(--accent);
+}
+
+/* Actions */
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 14px;
+  border-radius: var(--r);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+  border: none;
+  outline: none;
+  font-family: var(--font-ui);
+  white-space: nowrap;
+}
+
+.btn svg { flex-shrink: 0; }
+
+.btn-ghost {
+  background: transparent;
+  border: 1px solid var(--border-strong);
+  color: var(--text-secondary);
+}
+.btn-ghost:hover {
+  background: var(--bg-hover);
+  border-color: rgba(255,255,255,0.16);
+  color: var(--text-primary);
+}
+
+.btn-outline {
+  background: transparent;
+  border: 1px solid var(--accent-border);
+  color: var(--accent);
+}
+.btn-outline:hover {
+  background: var(--accent-faint);
+}
+
+.btn-run {
+  background: var(--accent);
+  color: #000;
+  font-weight: 700;
+  font-size: 12.5px;
+  box-shadow: 0 0 0 1px rgba(0,230,118,0.3), 0 4px 16px rgba(0,230,118,0.2);
+  letter-spacing: -0.1px;
+}
+.btn-run:hover {
+  background: #33eb91;
+  box-shadow: 0 0 0 1px rgba(0,230,118,0.4), 0 6px 24px rgba(0,230,118,0.3);
+  transform: translateY(-1px);
+}
+.btn-run:active { transform: scale(0.97); }
+.btn-run.loading {
+  background: var(--accent-dim);
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.kbd {
+  font-size: 9.5px;
+  background: rgba(0,0,0,0.3);
+  padding: 1px 5px;
+  border-radius: 3px;
+  border: 1px solid rgba(0,0,0,0.3);
+  font-family: var(--font-mono);
+  color: rgba(0,0,0,0.6);
+}
+
+.divider-v {
+  width: 1px;
+  height: 20px;
+  background: var(--border-strong);
+  flex-shrink: 0;
+}
+
+/* ═══════════════════════════════════════════════
+   BREADCRUMB / STATUS BAR
+═══════════════════════════════════════════════ */
+.statusbar {
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+  gap: 6px;
+  background: var(--bg-panel);
+  border-bottom: 1px solid var(--border);
+  font-size: 11px;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.statusbar-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.statusbar-sep { color: var(--text-faint); }
+
+.statusbar-file {
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+}
+
+.statusbar-right {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.server-status {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 10.5px;
+}
+
+.server-dot {
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 4px var(--accent);
+  animation: server-pulse 2.5s ease infinite;
+}
+
+@keyframes server-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+/* ═══════════════════════════════════════════════
+   MAIN PANELS
+═══════════════════════════════════════════════ */
+.panels {
+  display: grid;
+  grid-template-columns: 1fr 420px;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* ═══════════════════════════════════════════════
+   EDITOR PANEL
+═══════════════════════════════════════════════ */
+.editor-panel {
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid var(--border-strong);
+  overflow: hidden;
+}
+
+.panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  height: 38px;
+  background: var(--bg-panel);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+  gap: 12px;
+}
+
+.panel-header-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11.5px;
+  color: var(--text-muted);
+  min-width: 0;
+}
+
+.panel-icon { opacity: 0.5; flex-shrink: 0; }
+
+.lang-badge {
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  padding: 2px 7px;
+  border-radius: var(--r-sm);
+  background: rgba(0,230,118,0.08);
+  border: 1px solid var(--accent-border);
+  color: var(--accent);
+  flex-shrink: 0;
+}
+
+.editor-body {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+}
+
+/* Gutter / Line numbers */
+.gutter {
+  width: 52px;
+  flex-shrink: 0;
+  background: var(--bg-panel);
+  border-right: 1px solid var(--border);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 1.85;
+  color: var(--text-faint);
+  padding: 18px 0;
+  text-align: right;
+  padding-right: 12px;
+  user-select: none;
+  overflow: hidden;
+}
+
+/* Editor textarea */
+#editor {
+  flex: 1;
+  background: var(--bg-base);
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 1.85;
+  padding: 18px 20px;
+  resize: none;
+  border: none;
+  outline: none;
+  tab-size: 4;
+  caret-color: var(--accent);
+}
+
+#editor::selection {
+  background: rgba(0,230,118,0.12);
+}
+
+#editor::placeholder {
+  color: var(--text-faint);
+}
+
+.editor-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  height: 28px;
+  border-top: 1px solid var(--border);
+  background: var(--bg-panel);
+  font-size: 10.5px;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  flex-shrink: 0;
+}
+
+/* ═══════════════════════════════════════════════
+   OUTPUT PANEL
+═══════════════════════════════════════════════ */
+.output-panel {
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-surface);
+  overflow: hidden;
+}
+
+/* Status pill */
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 10.5px;
+  font-weight: 500;
+  letter-spacing: 0.2px;
+}
+.sp-ready {
+  background: rgba(74,85,104,0.2);
+  color: var(--text-muted);
+}
+.sp-run {
+  background: rgba(255,202,40,0.1);
+  color: var(--amber);
+}
+.sp-ok {
+  background: rgba(0,230,118,0.1);
+  color: var(--accent);
+}
+.sp-err {
+  background: rgba(239,83,80,0.1);
+  color: var(--red);
+}
+.sp-dot {
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: currentColor;
+}
+.sp-run .sp-dot {
+  animation: blink 1s infinite;
+}
+
+@keyframes blink {
+  0%,100% { opacity: 1; }
+  50% { opacity: 0.2; }
+}
+
+/* Output scroll area */
+.out-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: 18px;
+}
+.out-scroll::-webkit-scrollbar { width: 3px; }
+.out-scroll::-webkit-scrollbar-track { background: transparent; }
+.out-scroll::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border-radius: 2px;
+}
+
+/* Empty state */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  gap: 14px;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.empty-icon {
+  width: 48px; height: 48px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--border-strong);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.empty-icon svg { opacity: 0.4; }
+
+.empty-title {
+  font-size: 12.5px;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+.empty-sub {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: -8px;
+}
+
+/* ── Metric Cards ── */
+.metrics-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.metric-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 13px 15px;
+  transition: border-color 0.2s;
+}
+.metric-card:hover {
+  border-color: var(--border-strong);
+}
+
+.mc-label {
+  font-size: 9.5px;
+  color: var(--text-muted);
+  letter-spacing: 0.7px;
+  text-transform: uppercase;
+  margin-bottom: 5px;
+  font-family: var(--font-ui);
+}
+
+.mc-value {
+  font-size: 22px;
+  font-weight: 600;
+  font-family: var(--font-mono);
+  line-height: 1;
+  margin-bottom: 5px;
+}
+
+.mc-sub {
+  font-size: 10px;
+  color: var(--text-muted);
+}
+
+.mc-bar {
+  height: 3px;
+  border-radius: 2px;
+  margin-top: 8px;
+  background: var(--border);
+  overflow: hidden;
+}
+.mc-bar-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.6s ease;
+}
+
+.cv-green  { color: var(--accent); }
+.cv-amber  { color: var(--amber); }
+.cv-red    { color: var(--red); }
+.cv-blue   { color: var(--blue); }
+.cv-purple { color: var(--purple); }
+
+.bg-green  { background: var(--accent); }
+.bg-amber  { background: var(--amber); }
+.bg-red    { background: var(--red); }
+.bg-blue   { background: var(--blue); }
+
+/* ── Progress bar for calories ── */
+.kcal-progress {
+  margin: 10px 0 16px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 12px 15px;
+}
+.kcal-progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.kcal-progress-label {
+  font-size: 10px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+}
+.kcal-progress-val {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+}
+.kcal-bar-track {
+  height: 5px;
+  background: var(--border);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.kcal-bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.8s cubic-bezier(.22,.68,0,1.2);
+}
+
+/* ── Separator ── */
+.out-sep {
+  height: 1px;
+  background: var(--border);
+  margin: 14px 0;
+}
+
+/* ── Output block ── */
+.out-block {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 2;
+}
+
+.out-line {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: 0 6px;
+  border-radius: var(--r-sm);
+  transition: background 0.1s;
+}
+.out-line:hover {
+  background: rgba(255,255,255,0.02);
+}
+
+/* Comment lines */
+.out-line.is-comment {
+  opacity: 0.35;
+  font-size: 11px;
+}
+
+/* Colors for token types */
+.t-assign   { color: var(--blue); }
+.t-repas    { color: var(--purple); }
+.t-imc      { color: #4db6ac; }
+.t-healthy  { color: var(--accent); }
+.t-warn     { color: var(--amber); }
+.t-conseil  { color: #ffd54f; }
+.t-obj      { color: #80cbc4; }
+.t-rhead    { color: var(--accent); font-weight: 600; margin-top: 4px; display: block; }
+.t-rrow     { color: #cfd8dc; }
+.t-rsep     { color: var(--text-faint); }
+.t-err      { color: var(--red); }
+.t-info     { color: var(--text-secondary); }
+.t-comment  { color: var(--text-faint); font-style: italic; }
+
+/* Token-icon indicator */
+.out-tag {
+  font-size: 9px;
+  font-weight: 700;
+  padding: 1px 5px;
+  border-radius: 3px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  flex-shrink: 0;
+  align-self: center;
+}
+.tag-imc     { background: rgba(77,182,172,0.15); color: #4db6ac; }
+.tag-repas   { background: rgba(179,157,219,0.15); color: var(--purple); }
+.tag-conseil { background: rgba(255,213,79,0.12); color: #ffd54f; }
+.tag-err     { background: rgba(239,83,80,0.12); color: var(--red); }
+.tag-ok      { background: rgba(0,230,118,0.1); color: var(--accent); }
+.tag-obj     { background: rgba(128,203,196,0.12); color: #80cbc4; }
+.tag-info    { background: rgba(255,255,255,0.05); color: var(--text-muted); }
+
+/* ── Section heading in output ── */
+.out-section-head {
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  padding: 10px 6px 4px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.out-section-head::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+/* ── Error block ── */
+.error-block {
+  background: rgba(239,83,80,0.07);
+  border: 1px solid rgba(239,83,80,0.2);
+  border-radius: var(--r-lg);
+  padding: 14px 16px;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  color: var(--red);
+  line-height: 1.7;
+}
+
+/* output panel footer */
+.out-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  height: 28px;
+  border-top: 1px solid var(--border);
+  background: var(--bg-panel);
+  font-size: 10.5px;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+/* ── Tooltip-style notification ── */
+.toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(10px);
+  background: var(--bg-card);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--r-lg);
+  padding: 10px 18px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  opacity: 0;
+  transition: all 0.25s;
+  pointer-events: none;
+  z-index: 9999;
+  white-space: nowrap;
+}
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* ── Scrollbar global ── */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 2px; }
+</style>
+</head>
+<body>
+
+<!-- TOAST NOTIFICATION -->
+<div class="toast" id="toast"></div>
+
+<div class="app">
+
+  <!-- ════════ TOPBAR ════════ -->
+  <header class="topbar">
+
+    <!-- Brand -->
+    <div class="brand">
+      <div class="brand-logo">🥗</div>
+      <div class="brand-text">
+        <div class="brand-name">NutriLang Studio</div>
+        <div class="brand-sub">Coach Nutritionnel Programmable</div>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <div class="tab active">
+        <div class="tab-indicator"></div>
+        <span>programme.nl</span>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="topbar-actions">
+      <button class="btn btn-ghost" onclick="loadExample()" title="Charger l'exemple">
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+          <rect x="2" y="2" width="12" height="12" rx="2"/>
+          <path d="M5 5.5h6M5 8h4M5 10.5h5"/>
+        </svg>
+        Exemple
+      </button>
+      <button class="btn btn-ghost" onclick="formatCode()" title="Formater le code">
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M2 4h12M2 8h8M2 12h10"/>
+        </svg>
+        Formater
+      </button>
+      <div class="divider-v"></div>
+      <button class="btn btn-ghost" onclick="clearEditor()" title="Effacer">
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M3 4h10M6 4V3h4v1M5 4v8a1 1 0 001 1h4a1 1 0 001-1V4"/>
+        </svg>
+        Effacer
+      </button>
+      <button class="btn btn-run" id="runBtn" onclick="analyser()">
+        <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor">
+          <path d="M5 3l9 5-9 5V3z"/>
+        </svg>
+        Exécuter
+        <span class="kbd">⌘↵</span>
+      </button>
+    </div>
+
+  </header>
+
+  <!-- ════════ STATUS BAR ════════ -->
+  <div class="statusbar">
+    <div class="statusbar-item">
+      <svg width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M2 12L7 5l3 4 2-3 3 6"/>
+      </svg>
+      Workspace
+    </div>
+    <span class="statusbar-sep">/</span>
+    <div class="statusbar-item">Nutrition</div>
+    <span class="statusbar-sep">/</span>
+    <span class="statusbar-file">programme.nl</span>
+
+    <div class="statusbar-right">
+      <span id="charCountStat">0 car · 0 lignes</span>
+      <span id="cursorStat" style="font-family:var(--font-mono)">Ln 1, Col 1</span>
+      <div class="server-status">
+        <span class="server-dot"></span>
+        Flask · localhost:5000
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════ MAIN PANELS ════════ -->
+  <main class="panels">
+
+    <!-- ── EDITOR PANEL ── -->
+    <div class="editor-panel">
+
+      <div class="panel-header">
+        <div class="panel-header-left">
+          <svg class="panel-icon" width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+            <polyline points="4,5 1,8 4,11"/>
+            <polyline points="12,5 15,8 12,11"/>
+            <line x1="9" y1="3" x2="7" y2="13"/>
+          </svg>
+          <span>Éditeur de code</span>
+          <span class="lang-badge">NutriLang 1.0</span>
+        </div>
+        <span id="cursorInfo" style="font-size:10.5px;color:var(--text-muted);font-family:var(--font-mono)">Ln 1, Col 1</span>
+      </div>
+
+      <div class="editor-body">
+        <div class="gutter" id="lineNums">1</div>
+        <textarea
+          id="editor"
+          autocomplete="off"
+          autocorrect="off"
+          autocapitalize="off"
+          spellcheck="false"
+          placeholder="// Écrivez votre programme NutriLang ici...
+// poids := 75
+// taille := 1.75
+// Calculer_IMC poids taille">
+        </textarea>
+      </div>
+
+      <div class="editor-footer">
+        <span id="charCount">0 caractères · 0 lignes</span>
+        <span>UTF-8 · NutriLang · Espaces: 4</span>
+      </div>
+
+    </div>
+
+    <!-- ── OUTPUT PANEL ── -->
+    <div class="output-panel">
+
+      <div class="panel-header">
+        <div class="panel-header-left">
+          <svg class="panel-icon" width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+            <rect x="1" y="1" width="14" height="14" rx="2"/>
+            <polyline points="4,5.5 7,8.5 4,11.5"/>
+            <line x1="8.5" y1="11.5" x2="12" y2="11.5"/>
+          </svg>
+          <span>Résultats</span>
+        </div>
+        <div class="status-pill sp-ready" id="statusPill">
+          <div class="sp-dot"></div>
+          <span id="statusText">Prêt</span>
+        </div>
+      </div>
+
+      <div class="out-scroll" id="outputArea">
+        <div class="empty-state" id="emptyState">
+          <div class="empty-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <circle cx="12" cy="12" r="10"/>
+              <polygon points="10,8 16,12 10,16 10,8"/>
+            </svg>
+          </div>
+          <div class="empty-title">Aucun résultat</div>
+          <div class="empty-sub">Exécutez votre programme pour voir l'analyse nutritionnelle</div>
+        </div>
+      </div>
+
+      <div class="out-footer">
+        <span id="execTimeLabel"></span>
+        <span id="outVersion" style="font-family:var(--font-mono)">v1.0.0</span>
+      </div>
+
+    </div>
+
+  </main>
+</div>
+
+<!-- ════════════════════════════════════════════
+     SCRIPT
+════════════════════════════════════════════ -->
+<script>
+/* ─── Éléments DOM ─── */
+const editorEl    = document.getElementById('editor');
+const lineNumsEl  = document.getElementById('lineNums');
+const charCountEl = document.getElementById('charCount');
+const charCountSt = document.getElementById('charCountStat');
+const cursorInfoEl= document.getElementById('cursorInfo');
+const cursorStEl  = document.getElementById('cursorStat');
+const outputArea  = document.getElementById('outputArea');
+const statusPill  = document.getElementById('statusPill');
+const statusText  = document.getElementById('statusText');
+const execTimeLbl = document.getElementById('execTimeLabel');
+const runBtn      = document.getElementById('runBtn');
+const toastEl     = document.getElementById('toast');
+
+/* ─── Programme exemple complet ─── */
+const EXAMPLE_CODE = `// ================================================
+//  Exemple Complet - NutriLang Coach v1.0
+//  Contient toutes les fonctionnalités importantes
+// ================================================
+poids := 86
+taille := 1.76
+age := 29
+// 1. Calcul de l'IMC
+Calculer_IMC poids taille
+// 2. Définition de l'objectif
+Objectif perte_poids
+// 3. Déclaration des repas
+Repas petit_dejeuner := 460
+Repas dejeuner := 780
+Repas collation := 320
+Repas diner := 590
+// 4. Vérification de la qualité des repas
+Verifier_healthy petit_dejeuner
+Verifier_healthy dejeuner
+Verifier_healthy diner
+// 5. Suggestions de repas adaptés à l'objectif
+Suggestion_healthy perte_poids
+// 6. Structure conditionnelle complète
+Si IMC > 25 Alors
+    Conseil "Vous êtes actuellement en surpoids. Suivez les suggestions pour réduire progressivement vos calories."
+Sinon
+    Si IMC < 18.5 Alors
+        Conseil "Vous êtes en insuffisance pondérale. Augmentez les portions protéinées."
+    Sinon
+        Conseil "Votre IMC est dans une bonne zone. Continuez à maintenir cet équilibre."
+    Finsi
+Finsi
+// 7. Conseil général
+Conseil "Buvez au moins 2.5 litres d'eau par jour et marchez 8000 pas quotidiennement."
+// 8. Affichage final du rapport
+afficher_nutrition`;
+
+/* ─── Numéros de lignes ─── */
+function updateLineNumbers() {
+  const lines = editorEl.value.split('\n');
+  lineNumsEl.textContent = lines.map((_, i) => i + 1).join('\n');
+  const info = `${editorEl.value.length} caractères · ${lines.length} lignes`;
+  charCountEl.textContent = info;
+  charCountSt.textContent = `${editorEl.value.length} car · ${lines.length} lignes`;
+}
+
+editorEl.addEventListener('input', updateLineNumbers);
+editorEl.addEventListener('scroll', () => {
+  lineNumsEl.scrollTop = editorEl.scrollTop;
+});
+
+/* ─── Curseur ─── */
+function updateCursor() {
+  const txt  = editorEl.value.substring(0, editorEl.selectionStart);
+  const line = txt.split('\n').length;
+  const col  = txt.split('\n').pop().length + 1;
+  const info = `Ln ${line}, Col ${col}`;
+  cursorInfoEl.textContent = info;
+  cursorStEl.textContent   = info;
+}
+
+editorEl.addEventListener('click',  updateCursor);
+editorEl.addEventListener('keyup',  updateCursor);
+
+/* ─── Raccourcis clavier ─── */
+editorEl.addEventListener('keydown', e => {
+  // Tab → 4 espaces
+  if (e.key === 'Tab') {
+    e.preventDefault();
+    const s  = editorEl.selectionStart;
+    const en = editorEl.selectionEnd;
+    editorEl.value = editorEl.value.substring(0, s) + '    ' + editorEl.value.substring(en);
+    editorEl.selectionStart = editorEl.selectionEnd = s + 4;
+    updateLineNumbers();
+  }
+  // Ctrl/Cmd + Entrée → Exécuter
+  if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+    e.preventDefault();
+    analyser();
+  }
+});
+
+/* ─── Status pill ─── */
+function setStatus(cls, label) {
+  statusPill.className = 'status-pill ' + cls;
+  statusText.textContent = label;
+}
+
+/* ─── Toast notification ─── */
+function showToast(msg, duration = 2200) {
+  toastEl.textContent = msg;
+  toastEl.classList.add('show');
+  setTimeout(() => toastEl.classList.remove('show'), duration);
+}
+
+/* ─── Escape HTML ─── */
+function esc(s) {
+  return String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}
+
+/* ─── Rendu de la sortie ─── */
+function renderOutput(raw) {
+  const lines = raw.split('\n').filter(l => l.trim());
+
+  /* Extraire les métriques pour les cartes */
+  let imc = null, totalKcal = 0, nbRepas = 0, obj = '', age = null;
+
+  lines.forEach(line => {
+    // IMC
+    const imcM = line.match(/IMC calculé\s*:\s*([\d.]+)/i);
+    if (imcM) imc = parseFloat(imcM[1]);
+
+    // Calories
+    const kcalM = line.match(/Repas .+ déclaré \((\d+)\s*kcal\)/i);
+    if (kcalM) { totalKcal += parseInt(kcalM[1]); nbRepas++; }
+
+    // Objectif
+    const objM = line.match(/Objectif\s*:\s*(\S+)/i);
+    if (objM) obj = objM[1];
+  });
+
+  const wrapper = document.createElement('div');
+
+  /* ── Métriques ── */
+  if (imc !== null || totalKcal > 0) {
+    const imcClass   = imc === null ? 'cv-blue'
+                     : imc < 18.5  ? 'cv-amber'
+                     : imc < 25    ? 'cv-green'
+                     : imc < 30    ? 'cv-amber'
+                     : 'cv-red';
+
+    const imcBarCls  = imc === null ? 'bg-blue'
+                     : imc < 18.5  ? 'bg-amber'
+                     : imc < 25    ? 'bg-green'
+                     : imc < 30    ? 'bg-amber'
+                     : 'bg-red';
+
+    const imcLabel   = imc === null ? '—'
+                     : imc < 18.5  ? 'Insuffisance pondérale'
+                     : imc < 25    ? 'Poids normal ✓'
+                     : imc < 30    ? 'Surpoids'
+                     : 'Obésité';
+
+    const kcalCls    = totalKcal > 2500 ? 'cv-red'
+                     : totalKcal > 1800 ? 'cv-amber'
+                     : 'cv-green';
+    const kcalBarCls = totalKcal > 2500 ? 'bg-red'
+                     : totalKcal > 1800 ? 'bg-amber'
+                     : 'bg-green';
+
+    // Pourcentage barre IMC (0=16 → 40, clampé)
+    const imcPct   = imc !== null ? Math.min(100, Math.max(5, ((imc - 16) / (40 - 16)) * 100)).toFixed(1) : 0;
+    // Pourcentage barre calories (objectif 2000 kcal)
+    const kcalPct  = Math.min(100, (totalKcal / 2000 * 100)).toFixed(1);
+
+    const grid = document.createElement('div');
+    grid.className = 'metrics-grid';
+    grid.innerHTML = (imc !== null ? `
+      <div class="metric-card">
+        <div class="mc-label">Indice de Masse Corporelle</div>
+        <div class="mc-value ${imcClass}">${imc.toFixed(2)}</div>
+        <div class="mc-sub">${imcLabel}</div>
+        <div class="mc-bar">
+          <div class="mc-bar-fill ${imcBarCls}" style="width:${imcPct}%"></div>
+        </div>
+      </div>` : '') +
+      (obj ? `
+      <div class="metric-card">
+        <div class="mc-label">Objectif</div>
+        <div class="mc-value cv-purple" style="font-size:15px;margin-bottom:8px">${obj.replace(/_/g, ' ')}</div>
+        <div class="mc-sub">Programme personnalisé actif</div>
+        <div class="mc-bar">
+          <div class="mc-bar-fill" style="width:65%;background:var(--purple)"></div>
+        </div>
+      </div>` : '');
+
+    wrapper.appendChild(grid);
+
+    /* Barre de progression calories */
+    if (totalKcal > 0) {
+      const prog = document.createElement('div');
+      prog.className = 'kcal-progress';
+      prog.innerHTML = `
+        <div class="kcal-progress-header">
+          <span class="kcal-progress-label">Calories journalières (${nbRepas} repas)</span>
+          <span class="kcal-progress-val ${kcalCls}">${totalKcal} kcal</span>
+        </div>
+        <div class="kcal-bar-track">
+          <div class="kcal-bar-fill ${kcalBarCls}" style="width:${kcalPct}%"></div>
+        </div>`;
+      wrapper.appendChild(prog);
+    }
+  }
+
+  /* ── Séparateur ── */
+  const sep = document.createElement('div');
+  sep.className = 'out-sep';
+  wrapper.appendChild(sep);
+
+  /* ── Section: Log d'exécution ── */
+  const secHead = document.createElement('div');
+  secHead.className = 'out-section-head';
+  secHead.textContent = 'Log d\'exécution';
+  wrapper.appendChild(secHead);
+
+  /* ── Lignes de sortie ── */
+  const block = document.createElement('div');
+  block.className = 'out-block';
+
+  lines.forEach(line => {
+    const row = document.createElement('div');
+    row.className = 'out-line';
+
+    const isComment = line.trim().startsWith('//');
+    if (isComment) row.classList.add('is-comment');
+
+    let tagHtml  = '';
+    let textCls  = 't-info';
+
+    if (isComment) {
+      textCls = 't-comment';
+    } else if (/IMC calculé/i.test(line)) {
+      textCls  = 't-imc';
+      tagHtml  = '<span class="out-tag tag-imc">IMC</span>';
+    } else if (/Objectif/i.test(line)) {
+      textCls = 't-obj';
+      tagHtml = '<span class="out-tag tag-obj">OBJ</span>';
+    } else if (/:=/.test(line)) {
+      textCls = 't-assign';
+    } else if (/Repas .+ déclaré/i.test(line)) {
+      textCls = 't-repas';
+      tagHtml = '<span class="out-tag tag-repas">REPAS</span>';
+    } else if (/HEALTHY/i.test(line)) {
+      textCls = 't-healthy';
+      tagHtml = '<span class="out-tag tag-ok">OK</span>';
+    } else if (/TROP CALORIQUE/i.test(line)) {
+      textCls = 't-warn';
+      tagHtml = '<span class="out-tag tag-err">!</span>';
+    } else if (/Suggestion/i.test(line)) {
+      textCls = 't-obj';
+      tagHtml = '<span class="out-tag tag-obj">SUGG</span>';
+    } else if (/Conseil/i.test(line)) {
+      textCls = 't-conseil';
+      tagHtml = '<span class="out-tag tag-conseil">CONSEIL</span>';
+    } else if (/RAPPORT/i.test(line)) {
+      textCls = 't-rhead';
+    } else if (/->/.test(line)) {
+      textCls = 't-rrow';
+    } else if (/^=+$/.test(line.trim())) {
+      textCls = 't-rsep';
+    } else if (/erreur|error/i.test(line)) {
+      textCls = 't-err';
+      tagHtml = '<span class="out-tag tag-err">ERR</span>';
+    }
+
+    row.innerHTML = tagHtml + `<span class="${textCls}">${esc(line)}</span>`;
+    block.appendChild(row);
+  });
+
+  wrapper.appendChild(block);
+  return wrapper;
+}
+
+/* ─── Analyser / Exécuter ─── */
+async function analyser() {
+  if (runBtn.classList.contains('loading')) return;
+
+  const code = editorEl.value.trim();
+  if (!code) {
+    showToast('⚠ L\'éditeur est vide');
+    return;
+  }
+
+  // UI → loading
+  runBtn.classList.add('loading');
+  runBtn.innerHTML = `
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+      <circle cx="12" cy="12" r="10" opacity=".3"/>
+      <path d="M12 2a10 10 0 010 20" stroke-dasharray="20" stroke-dashoffset="0">
+        <animateTransform attributeName="transform" type="rotate" from="0 12 12" to="360 12 12" dur="0.8s" repeatCount="indefinite"/>
+      </path>
+    </svg>
+    Analyse en cours...`;
+  setStatus('sp-run', 'Analyse en cours');
+  outputArea.innerHTML = '';
+  execTimeLbl.textContent = '';
+
+  const t0 = performance.now();
+
+  try {
+    const response = await fetch('/execute', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ code })
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+
+    const data = await response.json();
+    const ms   = (performance.now() - t0).toFixed(0);
+
+    outputArea.innerHTML = '';
+    outputArea.appendChild(renderOutput(data.output || data.result || ''));
+
+    const hasError = /erreur|error/i.test(data.output || '');
+    setStatus(hasError ? 'sp-err' : 'sp-ok', hasError ? 'Erreur détectée' : 'Succès');
+    execTimeLbl.textContent = `Exécuté en ${ms}ms`;
+
+    if (!hasError) showToast('✓ Analyse terminée avec succès');
+
+  } catch (err) {
+    const ms = (performance.now() - t0).toFixed(0);
+
+    outputArea.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon" style="border-color:rgba(239,83,80,.25)">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ef5350" stroke-width="1.5">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="15" y1="9" x2="9" y2="15"/>
+            <line x1="9" y1="9" x2="15" y2="15"/>
+          </svg>
+        </div>
+        <div class="empty-title" style="color:var(--red)">Serveur inaccessible</div>
+        <div class="empty-sub">
+          Vérifiez que Flask tourne : <code style="color:var(--accent);font-size:11px">python server.py</code>
+        </div>
+      </div>`;
+    setStatus('sp-err', 'Hors ligne');
+    execTimeLbl.textContent = `Échec après ${ms}ms`;
+  }
+
+  // Restaurer bouton
+  runBtn.classList.remove('loading');
+  runBtn.innerHTML = `
+    <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor">
+      <path d="M5 3l9 5-9 5V3z"/>
+    </svg>
+    Exécuter
+    <span class="kbd">⌘↵</span>`;
+}
+
+/* ─── Effacer ─── */
+function clearEditor() {
+  editorEl.value = '';
+  outputArea.innerHTML = `
+    <div class="empty-state">
+      <div class="empty-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <circle cx="12" cy="12" r="10"/>
+          <polygon points="10,8 16,12 10,16 10,8"/>
+        </svg>
+      </div>
+      <div class="empty-title">Aucun résultat</div>
+      <div class="empty-sub">Exécutez votre programme pour voir l'analyse nutritionnelle</div>
+    </div>`;
+  setStatus('sp-ready', 'Prêt');
+  execTimeLbl.textContent = '';
+  updateLineNumbers();
+  editorEl.focus();
+  showToast('Éditeur effacé');
+}
+
+/* ─── Charger exemple ─── */
+function loadExample() {
+  editorEl.value = EXAMPLE_CODE;
+  updateLineNumbers();
+  editorEl.focus();
+  showToast('✓ Exemple chargé');
+}
+
+/* ─── Formater (indentation basique) ─── */
+function formatCode() {
+  const lines  = editorEl.value.split('\n');
+  let depth    = 0;
+  const result = lines.map(line => {
+    const t = line.trim();
+    if (!t) return '';
+    if (/^(Finsi|Sinon)/i.test(t)) depth = Math.max(0, depth - 1);
+    const indented = '    '.repeat(depth) + t;
+    if (/^(Si .+ Alors|Sinon)$/i.test(t)) depth++;
+    return indented;
+  });
+  editorEl.value = result.join('\n');
+  updateLineNumbers();
+  showToast('✓ Code formaté');
+}
+
+/* ─── Init ─── */
+loadExample();
+updateLineNumbers();
+</script>
+</body>
+</html>
