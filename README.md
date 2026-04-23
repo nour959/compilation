@@ -1,71 +1,105 @@
 # NutriLang Studio
 
-**NutriLang** est un langage de programmation simple et éducatif dédié à la nutrition et à la santé.  
-Il permet d’écrire des scripts pour calculer l’IMC, déclarer des repas, vérifier leur qualité, définir des objectifs et recevoir des suggestions personnalisées.
+NutriLang Studio est un mini environnement de développement pour **NutriLang**, un langage spécialisé orienté **nutrition et santé**.
 
-Projet réalisé dans le cadre d’un cours de compilation (Flex + Bison + Interface Web).
+Le projet combine :
+
+- **Flex** pour l’analyse lexicale
+- **Bison** pour l’analyse syntaxique
+- **C** pour l’exécution
+- **Flask** pour le backend web
+- **HTML / CSS / JavaScript** pour l’interface web
+
+L’objectif est de permettre à un utilisateur d’écrire un programme NutriLang, de l’exécuter depuis une interface moderne, puis d’afficher un rapport nutritionnel et des suggestions de repas.
+
+---
+
+# Sommaire
+
+- [1. Fonctionnalités](#1-fonctionnalités)
+- [2. Structure du projet](#2-structure-du-projet)
+- [3. Prérequis](#3-prérequis)
+- [4. Cloner ou récupérer le projet](#4-cloner-ou-récupérer-le-projet)
+- [5. Installation étape par étape](#5-installation-étape-par-étape)
+- [6. Compilation du langage](#6-compilation-du-langage)
+- [7. Lancement du serveur web](#7-lancement-du-serveur-web)
+- [8. Accès à l’interface](#8-accès-à-linterface)
+- [9. Exécution rapide après un pull](#9-exécution-rapide-après-un-pull)
+- [10. Exemples NutriLang](#10-exemples-nutrilang)
+- [11. Commandes utiles](#11-commandes-utiles)
+- [12. Dépannage](#12-dépannage)
+- [13. Notes importantes](#13-notes-importantes)
 
 ---
 
-## Fonctionnalités
+# 1. Fonctionnalités
 
-- Déclaration de variables (`poids`, `taille`, `age`…)
-- Calcul de l’**IMC** avec interprétation automatique
-- Déclaration de repas avec calories (`Repas nom := calories`)
-- Vérification si un repas est **healthy** ou trop calorique
-- Définition d’**objectif** : `perte_poids`, `prise_muscle`, `maintien`
-- Suggestions de repas adaptés à l’objectif (`Suggestion_healthy`)
-- Structures conditionnelles : `Si ... Alors ... Sinon ... Finsi`
-- Conseils personnalisés (`Conseil "texte"`)
-- Affichage du rapport nutritionnel (`afficher_nutrition`)
-- Interface web moderne avec éditeur et sortie en temps réel
+NutriLang permet notamment de :
+
+- déclarer des variables numériques
+- déclarer des repas avec leurs calories
+- calculer l’IMC
+- vérifier si un repas est healthy
+- afficher des conseils nutritionnels
+- définir un objectif nutritionnel :
+  - `perte_poids`
+  - `prise_muscle`
+  - `maintien`
+- générer des suggestions de repas selon l’objectif
+- utiliser une condition :
+  - `Si`
+  - `Alors`
+  - `Sinon`
+  - `Finsi`
+- afficher un rapport nutritionnel
+
+L’interface web permet également :
+
+- de choisir un exemple de code par défaut
+- d’écrire un programme dans un éditeur
+- de lancer l’exécution
+- de visualiser les résultats
+- d’afficher des suggestions de repas avec images
 
 ---
+
+# 2. Structure du projet
+
+Organisation recommandée :
+
+```text
+NUTRILANG/
+│
+├── langage1.l
+├── langage1.y
+├── compile.sh
+├── nutrilang                # généré après compilation
+│
+└── web-ide/
+    ├── server.py
+    ├── templates/
+    │   └── index.html
+    └── static/
+        └── images/
+            ├── salade-poulet.jpg
+            ├── yaourt-grec.jpg
+            ├── poisson-brocoli.jpg
+            ├── omelette-avocat.jpg
+            ├── poulet-riz.jpg
+            ├── shake-banane.jpg
+            ├── bowl-saumon.jpg
+            ├── salade-thon.jpg
+            ├── lentilles-corail.jpg
+            └── default-meal.jpg
 
 ## Installation & Utilisation
 
 ### 1. Compilation du langage
 
-```bash
-cd /mnt/c/Users/Nour/Desktop/NutriLang
-
-# Rendre le script exécutable (une seule fois)
+python3 -m venv venv
+source venv/bin/activate
+pip install flask flask-cors
 chmod +x compile.sh
-
-# Compiler
 ./compile.sh
-
-
-2. Lancement de l’interface web
-Bashcd web-ide
-source venv/bin/activate     # Si vous utilisez l'environnement virtuel
-python server.py
-
-
-
-Commandes disponibles
-
-Commande,Description
-poids := 75,Assignation de variable
-Calculer_IMC poids taille,Calcul et affichage de l’IMC
-Repas nom := 650,Déclarer un repas
-Verifier_healthy nom,Vérifier si le repas est healthy
-Objectif perte_poids,Définir l’objectif
-Suggestion_healthy ...,Afficher des suggestions adaptées
-Si ... Alors ... Finsi,Structure conditionnelle
-"Conseil ""texte""",Afficher un conseil
-afficher_nutrition,Afficher le rapport complet
-
-
-Structure du projet 
-
-NutriLang/
-├── langage1.l              # Analyseur lexical (Flex)
-├── langage1.y              # Analyseur syntaxique et sémantique (Bison)
-├── compile.sh              # Script de compilation
-├── nutrilang               # Exécutable généré
-├── web-ide/
-│   ├── server.py           # Serveur Flask
-│   └── templates/
-│       └── index.html      # Interface web
-└── README.md
+cd web..
+python3 server.py
