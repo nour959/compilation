@@ -1,1351 +1,1387 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NutriLang Studio — Coach Nutritionnel</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600&family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-<style>
-/* ═══════════════════════════════════════════════
-   RESET & ROOT
-═══════════════════════════════════════════════ */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-:root {
-  /* Backgrounds */
-  --bg-base:       #080a0e;
-  --bg-surface:    #0d1017;
-  --bg-panel:      #111520;
-  --bg-card:       #161b27;
-  --bg-hover:      #1c2233;
-  --bg-input:      #0d1017;
-
-  /* Brand / Accent */
-  --accent:        #00e676;
-  --accent-dim:    #00c853;
-  --accent-faint:  rgba(0, 230, 118, 0.06);
-  --accent-glow:   rgba(0, 230, 118, 0.15);
-  --accent-border: rgba(0, 230, 118, 0.22);
-
-  /* Semantic */
-  --blue:    #4fc3f7;
-  --purple:  #b39ddb;
-  --amber:   #ffca28;
-  --red:     #ef5350;
-  --teal:    #4db6ac;
-
-  /* Text */
-  --text-primary:   #e8ecf3;
-  --text-secondary: #8892a4;
-  --text-muted:     #4a5568;
-  --text-faint:     #2d3748;
-
-  /* Borders */
-  --border:        rgba(255,255,255,0.06);
-  --border-strong: rgba(255,255,255,0.11);
-  --border-accent: var(--accent-border);
-
-  /* Fonts */
-  --font-ui:   'DM Sans', system-ui, sans-serif;
-  --font-head: 'Syne', system-ui, sans-serif;
-  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
-
-  /* Spacing */
-  --r-sm: 5px;
-  --r:    8px;
-  --r-lg: 12px;
-  --r-xl: 16px;
-}
-
-html, body {
-  height: 100%;
-  overflow: hidden;
-  background: var(--bg-base);
-  color: var(--text-primary);
-  font-family: var(--font-ui);
-  font-size: 13px;
-  -webkit-font-smoothing: antialiased;
-}
-
-/* ═══════════════════════════════════════════════
-   APP LAYOUT
-═══════════════════════════════════════════════ */
-.app {
-  display: grid;
-  grid-template-rows: 58px 34px 1fr;
-  height: 100vh;
-  max-height: 100vh;
-}
-
-/* ═══════════════════════════════════════════════
-   TOPBAR
-═══════════════════════════════════════════════ */
-.topbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 24px;
-  background: var(--bg-surface);
-  border-bottom: 1px solid var(--border-strong);
-  flex-shrink: 0;
-  gap: 16px;
-  position: relative;
-}
-
-/* subtle top-accent line */
-.topbar::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0; height: 2px;
-  background: linear-gradient(90deg, transparent 0%, var(--accent-dim) 30%, var(--accent) 50%, var(--accent-dim) 70%, transparent 100%);
-  opacity: 0.7;
-}
-
-/* Brand */
-.brand {
-  display: flex;
-  align-items: center;
-  gap: 11px;
-  flex-shrink: 0;
-}
-
-.brand-logo {
-  width: 34px; height: 34px;
-  border-radius: var(--r);
-  background: linear-gradient(135deg, #00e676 0%, #00b248 100%);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 16px;
-  box-shadow: 0 0 20px rgba(0,230,118,0.2);
-  flex-shrink: 0;
-}
-
-.brand-text { display: flex; flex-direction: column; gap: 1px; }
-.brand-name {
-  font-family: var(--font-head);
-  font-size: 15px;
-  font-weight: 700;
-  color: var(--text-primary);
-  letter-spacing: -0.3px;
-  line-height: 1;
-}
-.brand-sub {
-  font-size: 10px;
-  color: var(--text-muted);
-  letter-spacing: 0.3px;
-}
-
-/* Tabs */
-.tabs {
-  display: flex;
-  align-items: center;
-  gap: 2px;
-}
-
-.tab {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  padding: 5px 14px;
-  border-radius: var(--r-sm);
-  font-size: 12px;
-  color: var(--text-muted);
-  cursor: pointer;
-  transition: all 0.15s;
-  border: 1px solid transparent;
-  font-family: var(--font-mono);
-}
-
-.tab.active {
-  background: var(--bg-card);
-  border-color: var(--border-strong);
-  color: var(--text-secondary);
-}
-
-.tab-indicator {
-  width: 6px; height: 6px;
-  border-radius: 50%;
-  background: var(--accent);
-  box-shadow: 0 0 6px var(--accent);
-}
-
-/* Actions */
-.topbar-actions {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-shrink: 0;
-}
-
-.btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  padding: 7px 14px;
-  border-radius: var(--r);
-  font-size: 12px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.15s;
-  border: none;
-  outline: none;
-  font-family: var(--font-ui);
-  white-space: nowrap;
-}
-
-.btn svg { flex-shrink: 0; }
-
-.btn-ghost {
-  background: transparent;
-  border: 1px solid var(--border-strong);
-  color: var(--text-secondary);
-}
-.btn-ghost:hover {
-  background: var(--bg-hover);
-  border-color: rgba(255,255,255,0.16);
-  color: var(--text-primary);
-}
-
-.btn-outline {
-  background: transparent;
-  border: 1px solid var(--accent-border);
-  color: var(--accent);
-}
-.btn-outline:hover {
-  background: var(--accent-faint);
-}
-
-.btn-run {
-  background: var(--accent);
-  color: #000;
-  font-weight: 700;
-  font-size: 12.5px;
-  box-shadow: 0 0 0 1px rgba(0,230,118,0.3), 0 4px 16px rgba(0,230,118,0.2);
-  letter-spacing: -0.1px;
-}
-.btn-run:hover {
-  background: #33eb91;
-  box-shadow: 0 0 0 1px rgba(0,230,118,0.4), 0 6px 24px rgba(0,230,118,0.3);
-  transform: translateY(-1px);
-}
-.btn-run:active { transform: scale(0.97); }
-.btn-run.loading {
-  background: var(--accent-dim);
-  cursor: not-allowed;
-  opacity: 0.7;
-}
-
-.kbd {
-  font-size: 9.5px;
-  background: rgba(0,0,0,0.3);
-  padding: 1px 5px;
-  border-radius: 3px;
-  border: 1px solid rgba(0,0,0,0.3);
-  font-family: var(--font-mono);
-  color: rgba(0,0,0,0.6);
-}
-
-.divider-v {
-  width: 1px;
-  height: 20px;
-  background: var(--border-strong);
-  flex-shrink: 0;
-}
-
-/* ═══════════════════════════════════════════════
-   BREADCRUMB / STATUS BAR
-═══════════════════════════════════════════════ */
-.statusbar {
-  display: flex;
-  align-items: center;
-  padding: 0 24px;
-  gap: 6px;
-  background: var(--bg-panel);
-  border-bottom: 1px solid var(--border);
-  font-size: 11px;
-  color: var(--text-muted);
-  flex-shrink: 0;
-}
-
-.statusbar-item {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-}
-
-.statusbar-sep { color: var(--text-faint); }
-
-.statusbar-file {
-  color: var(--accent);
-  font-family: var(--font-mono);
-  font-size: 10.5px;
-}
-
-.statusbar-right {
-  margin-left: auto;
-  display: flex;
-  align-items: center;
-  gap: 14px;
-}
-
-.server-status {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  font-size: 10.5px;
-}
-
-.server-dot {
-  width: 5px; height: 5px;
-  border-radius: 50%;
-  background: var(--accent);
-  box-shadow: 0 0 4px var(--accent);
-  animation: server-pulse 2.5s ease infinite;
-}
-
-@keyframes server-pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.4; }
-}
-
-/* ═══════════════════════════════════════════════
-   MAIN PANELS
-═══════════════════════════════════════════════ */
-.panels {
-  display: grid;
-  grid-template-columns: 1fr 420px;
-  height: 100%;
-  overflow: hidden;
-}
-
-/* ═══════════════════════════════════════════════
-   EDITOR PANEL
-═══════════════════════════════════════════════ */
-.editor-panel {
-  display: flex;
-  flex-direction: column;
-  border-right: 1px solid var(--border-strong);
-  overflow: hidden;
-}
-
-.panel-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 16px;
-  height: 38px;
-  background: var(--bg-panel);
-  border-bottom: 1px solid var(--border);
-  flex-shrink: 0;
-  gap: 12px;
-}
-
-.panel-header-left {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 11.5px;
-  color: var(--text-muted);
-  min-width: 0;
-}
-
-.panel-icon { opacity: 0.5; flex-shrink: 0; }
-
-.lang-badge {
-  font-size: 9.5px;
-  font-weight: 600;
-  letter-spacing: 0.8px;
-  text-transform: uppercase;
-  padding: 2px 7px;
-  border-radius: var(--r-sm);
-  background: rgba(0,230,118,0.08);
-  border: 1px solid var(--accent-border);
-  color: var(--accent);
-  flex-shrink: 0;
-}
-
-.editor-body {
-  flex: 1;
-  display: flex;
-  overflow: hidden;
-}
-
-/* Gutter / Line numbers */
-.gutter {
-  width: 52px;
-  flex-shrink: 0;
-  background: var(--bg-panel);
-  border-right: 1px solid var(--border);
-  font-family: var(--font-mono);
-  font-size: 12px;
-  line-height: 1.85;
-  color: var(--text-faint);
-  padding: 18px 0;
-  text-align: right;
-  padding-right: 12px;
-  user-select: none;
-  overflow: hidden;
-}
-
-/* Editor textarea */
-#editor {
-  flex: 1;
-  background: var(--bg-base);
-  color: var(--text-primary);
-  font-family: var(--font-mono);
-  font-size: 13px;
-  line-height: 1.85;
-  padding: 18px 20px;
-  resize: none;
-  border: none;
-  outline: none;
-  tab-size: 4;
-  caret-color: var(--accent);
-}
-
-#editor::selection {
-  background: rgba(0,230,118,0.12);
-}
-
-#editor::placeholder {
-  color: var(--text-faint);
-}
-
-.editor-footer {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 16px;
-  height: 28px;
-  border-top: 1px solid var(--border);
-  background: var(--bg-panel);
-  font-size: 10.5px;
-  color: var(--text-muted);
-  font-family: var(--font-mono);
-  flex-shrink: 0;
-}
-
-/* ═══════════════════════════════════════════════
-   OUTPUT PANEL
-═══════════════════════════════════════════════ */
-.output-panel {
-  display: flex;
-  flex-direction: column;
-  background: var(--bg-surface);
-  overflow: hidden;
-}
-
-/* Status pill */
-.status-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  padding: 3px 10px;
-  border-radius: 20px;
-  font-size: 10.5px;
-  font-weight: 500;
-  letter-spacing: 0.2px;
-}
-.sp-ready {
-  background: rgba(74,85,104,0.2);
-  color: var(--text-muted);
-}
-.sp-run {
-  background: rgba(255,202,40,0.1);
-  color: var(--amber);
-}
-.sp-ok {
-  background: rgba(0,230,118,0.1);
-  color: var(--accent);
-}
-.sp-err {
-  background: rgba(239,83,80,0.1);
-  color: var(--red);
-}
-.sp-dot {
-  width: 5px; height: 5px;
-  border-radius: 50%;
-  background: currentColor;
-}
-.sp-run .sp-dot {
-  animation: blink 1s infinite;
-}
-
-@keyframes blink {
-  0%,100% { opacity: 1; }
-  50% { opacity: 0.2; }
-}
-
-/* Output scroll area */
-.out-scroll {
-  flex: 1;
-  overflow-y: auto;
-  padding: 18px;
-}
-.out-scroll::-webkit-scrollbar { width: 3px; }
-.out-scroll::-webkit-scrollbar-track { background: transparent; }
-.out-scroll::-webkit-scrollbar-thumb {
-  background: var(--border-strong);
-  border-radius: 2px;
-}
-
-/* Empty state */
-.empty-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-  gap: 14px;
-  color: var(--text-muted);
-  text-align: center;
-}
-
-.empty-icon {
-  width: 48px; height: 48px;
-  border-radius: 50%;
-  background: rgba(255,255,255,0.03);
-  border: 1px solid var(--border-strong);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.empty-icon svg { opacity: 0.4; }
-
-.empty-title {
-  font-size: 12.5px;
-  color: var(--text-secondary);
-  font-weight: 500;
-}
-.empty-sub {
-  font-size: 11px;
-  color: var(--text-muted);
-  margin-top: -8px;
-}
-
-/* ── Metric Cards ── */
-.metrics-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-  margin-bottom: 16px;
-}
-
-.metric-card {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: var(--r-lg);
-  padding: 13px 15px;
-  transition: border-color 0.2s;
-}
-.metric-card:hover {
-  border-color: var(--border-strong);
-}
-
-.mc-label {
-  font-size: 9.5px;
-  color: var(--text-muted);
-  letter-spacing: 0.7px;
-  text-transform: uppercase;
-  margin-bottom: 5px;
-  font-family: var(--font-ui);
-}
-
-.mc-value {
-  font-size: 22px;
-  font-weight: 600;
-  font-family: var(--font-mono);
-  line-height: 1;
-  margin-bottom: 5px;
-}
-
-.mc-sub {
-  font-size: 10px;
-  color: var(--text-muted);
-}
-
-.mc-bar {
-  height: 3px;
-  border-radius: 2px;
-  margin-top: 8px;
-  background: var(--border);
-  overflow: hidden;
-}
-.mc-bar-fill {
-  height: 100%;
-  border-radius: 2px;
-  transition: width 0.6s ease;
-}
-
-.cv-green  { color: var(--accent); }
-.cv-amber  { color: var(--amber); }
-.cv-red    { color: var(--red); }
-.cv-blue   { color: var(--blue); }
-.cv-purple { color: var(--purple); }
-
-.bg-green  { background: var(--accent); }
-.bg-amber  { background: var(--amber); }
-.bg-red    { background: var(--red); }
-.bg-blue   { background: var(--blue); }
-
-/* ── Progress bar for calories ── */
-.kcal-progress {
-  margin: 10px 0 16px;
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: var(--r-lg);
-  padding: 12px 15px;
-}
-.kcal-progress-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 8px;
-}
-.kcal-progress-label {
-  font-size: 10px;
-  color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.6px;
-}
-.kcal-progress-val {
-  font-family: var(--font-mono);
-  font-size: 12px;
-  font-weight: 600;
-}
-.kcal-bar-track {
-  height: 5px;
-  background: var(--border);
-  border-radius: 3px;
-  overflow: hidden;
-}
-.kcal-bar-fill {
-  height: 100%;
-  border-radius: 3px;
-  transition: width 0.8s cubic-bezier(.22,.68,0,1.2);
-}
-
-/* ── Separator ── */
-.out-sep {
-  height: 1px;
-  background: var(--border);
-  margin: 14px 0;
-}
-
-/* ── Output block ── */
-.out-block {
-  font-family: var(--font-mono);
-  font-size: 12px;
-  line-height: 2;
-}
-
-.out-line {
-  display: flex;
-  align-items: baseline;
-  gap: 10px;
-  padding: 0 6px;
-  border-radius: var(--r-sm);
-  transition: background 0.1s;
-}
-.out-line:hover {
-  background: rgba(255,255,255,0.02);
-}
-
-/* Comment lines */
-.out-line.is-comment {
-  opacity: 0.35;
-  font-size: 11px;
-}
-
-/* Colors for token types */
-.t-assign   { color: var(--blue); }
-.t-repas    { color: var(--purple); }
-.t-imc      { color: #4db6ac; }
-.t-healthy  { color: var(--accent); }
-.t-warn     { color: var(--amber); }
-.t-conseil  { color: #ffd54f; }
-.t-obj      { color: #80cbc4; }
-.t-rhead    { color: var(--accent); font-weight: 600; margin-top: 4px; display: block; }
-.t-rrow     { color: #cfd8dc; }
-.t-rsep     { color: var(--text-faint); }
-.t-err      { color: var(--red); }
-.t-info     { color: var(--text-secondary); }
-.t-comment  { color: var(--text-faint); font-style: italic; }
-
-/* Token-icon indicator */
-.out-tag {
-  font-size: 9px;
-  font-weight: 700;
-  padding: 1px 5px;
-  border-radius: 3px;
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
-  flex-shrink: 0;
-  align-self: center;
-}
-.tag-imc     { background: rgba(77,182,172,0.15); color: #4db6ac; }
-.tag-repas   { background: rgba(179,157,219,0.15); color: var(--purple); }
-.tag-conseil { background: rgba(255,213,79,0.12); color: #ffd54f; }
-.tag-err     { background: rgba(239,83,80,0.12); color: var(--red); }
-.tag-ok      { background: rgba(0,230,118,0.1); color: var(--accent); }
-.tag-obj     { background: rgba(128,203,196,0.12); color: #80cbc4; }
-.tag-info    { background: rgba(255,255,255,0.05); color: var(--text-muted); }
-
-/* ── Section heading in output ── */
-.out-section-head {
-  font-size: 9.5px;
-  font-weight: 600;
-  letter-spacing: 1.2px;
-  text-transform: uppercase;
-  color: var(--text-muted);
-  padding: 10px 6px 4px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.out-section-head::after {
-  content: '';
-  flex: 1;
-  height: 1px;
-  background: var(--border);
-}
-
-/* ── Error block ── */
-.error-block {
-  background: rgba(239,83,80,0.07);
-  border: 1px solid rgba(239,83,80,0.2);
-  border-radius: var(--r-lg);
-  padding: 14px 16px;
-  font-family: var(--font-mono);
-  font-size: 11.5px;
-  color: var(--red);
-  line-height: 1.7;
-}
-
-/* output panel footer */
-.out-footer {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 16px;
-  height: 28px;
-  border-top: 1px solid var(--border);
-  background: var(--bg-panel);
-  font-size: 10.5px;
-  color: var(--text-muted);
-  flex-shrink: 0;
-}
-
-/* ── Tooltip-style notification ── */
-.toast {
-  position: fixed;
-  bottom: 24px;
-  left: 50%;
-  transform: translateX(-50%) translateY(10px);
-  background: var(--bg-card);
-  border: 1px solid var(--border-strong);
-  border-radius: var(--r-lg);
-  padding: 10px 18px;
-  font-size: 12px;
-  color: var(--text-secondary);
-  opacity: 0;
-  transition: all 0.25s;
-  pointer-events: none;
-  z-index: 9999;
-  white-space: nowrap;
-}
-.toast.show {
-  opacity: 1;
-  transform: translateX(-50%) translateY(0);
-}
-
-/* ── Scrollbar global ── */
-::-webkit-scrollbar { width: 4px; height: 4px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 2px; }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NutriLang Studio</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg: #f6f3ee;
+      --panel: rgba(255,255,255,0.72);
+      --line: rgba(39, 44, 51, 0.08);
+      --text: #17212b;
+      --muted: #6d7885;
+      --soft: #94a0ad;
+      --sage: #7ca37d;
+      --sage-dark: #5f8661;
+      --olive: #56684d;
+      --peach: #f0b089;
+      --gold: #d6b16d;
+      --red: #d97062;
+      --blue: #7f9eb8;
+      --shadow: 0 20px 60px rgba(20, 28, 36, 0.08);
+      --shadow-soft: 0 10px 30px rgba(20, 28, 36, 0.05);
+      --radius-xl: 28px;
+      --mono: "JetBrains Mono", monospace;
+      --sans: "Inter", system-ui, sans-serif;
+      --serif: "Playfair Display", serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
+    body {
+      font-family: var(--sans);
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(124,163,125,0.16), transparent 28%),
+        radial-gradient(circle at right 20%, rgba(240,176,137,0.18), transparent 20%),
+        linear-gradient(180deg, #faf8f4 0%, #f5f1ea 100%);
+      overflow: hidden;
+    }
+
+    .app {
+      height: 100vh;
+      display: grid;
+      grid-template-rows: auto 1fr;
+      gap: 18px;
+      padding: 20px;
+    }
+
+    .shell {
+      backdrop-filter: blur(16px);
+      background: var(--panel);
+      border: 1px solid rgba(255,255,255,0.5);
+      box-shadow: var(--shadow);
+      border-radius: 32px;
+      overflow: hidden;
+    }
+
+    .topbar {
+      display: grid;
+      grid-template-columns: 1.2fr auto auto;
+      align-items: center;
+      gap: 18px;
+      padding: 20px 24px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      min-width: 0;
+    }
+
+    .brand-badge {
+      width: 52px;
+      height: 52px;
+      border-radius: 18px;
+      background: linear-gradient(135deg, rgba(124,163,125,0.95), rgba(240,176,137,0.95));
+      display: grid;
+      place-items: center;
+      box-shadow: 0 12px 30px rgba(124,163,125,0.25);
+      color: white;
+      font-size: 24px;
+      flex-shrink: 0;
+    }
+
+    .brand-copy { min-width: 0; }
+
+    .eyebrow {
+      font-size: 11px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--sage-dark);
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .brand-title {
+      font-family: var(--serif);
+      font-size: 28px;
+      line-height: 1;
+      letter-spacing: -0.03em;
+      margin-bottom: 4px;
+    }
+
+    .brand-sub {
+      color: var(--muted);
+      font-size: 14px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .status-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 16px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.78);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow-soft);
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .status-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: var(--sage);
+      box-shadow: 0 0 0 5px rgba(124,163,125,0.12);
+    }
+
+    .actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .btn {
+      border: none;
+      outline: none;
+      border-radius: 999px;
+      padding: 13px 18px;
+      font-family: var(--sans);
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      transition: 0.22s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn-soft {
+      background: rgba(255,255,255,0.82);
+      border: 1px solid var(--line);
+      color: var(--text);
+    }
+
+    .btn-soft:hover {
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-soft);
+      background: white;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--sage-dark), var(--sage));
+      color: white;
+      box-shadow: 0 14px 28px rgba(95,134,97,0.22);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 18px 34px rgba(95,134,97,0.28);
+    }
+
+    .btn-primary.loading {
+      opacity: 0.78;
+      cursor: not-allowed;
+    }
+
+    .kbd {
+      font-family: var(--mono);
+      font-size: 11px;
+      padding: 4px 7px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.18);
+      border: 1px solid rgba(255,255,255,0.18);
+    }
+
+    .main {
+      min-height: 0;
+      display: grid;
+      grid-template-columns: 320px minmax(0, 1fr) 440px;
+      gap: 18px;
+    }
+
+    .panel {
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      backdrop-filter: blur(14px);
+      background: var(--panel);
+      border: 1px solid rgba(255,255,255,0.48);
+      box-shadow: var(--shadow-soft);
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+    }
+
+    .side {
+      padding: 22px;
+      gap: 18px;
+      overflow: auto;
+    }
+
+    .mini-card {
+      background: rgba(255,255,255,0.76);
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      padding: 18px;
+      margin-bottom: 16px;
+    }
+
+    .mini-kicker {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: var(--soft);
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .mini-title {
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      margin-bottom: 8px;
+    }
+
+    .mini-text {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .stat-list {
+      display: grid;
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .stat-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    .stat-row strong {
+      color: var(--text);
+      font-weight: 700;
+    }
+
+    .examples {
+      display: grid;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .example-btn {
+      width: 100%;
+      text-align: left;
+      border: none;
+      background: rgba(255,255,255,0.82);
+      border: 1px solid var(--line);
+      color: var(--text);
+      border-radius: 16px;
+      padding: 14px 15px;
+      cursor: pointer;
+      transition: 0.2s ease;
+      font-size: 13px;
+      line-height: 1.5;
+      font-family: var(--sans);
+    }
+
+    .example-btn:hover {
+      background: white;
+      transform: translateY(-1px);
+    }
+
+    .example-btn.active {
+      border-color: rgba(124,163,125,0.45);
+      background: rgba(124,163,125,0.10);
+      box-shadow: inset 0 0 0 1px rgba(124,163,125,0.18);
+    }
+
+    .editor-panel { min-width: 0; }
+
+    .editor-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 22px 24px 16px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .editor-title {
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      margin-bottom: 4px;
+    }
+
+    .editor-sub {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .pill {
+      border-radius: 999px;
+      padding: 8px 12px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      background: rgba(124,163,125,0.1);
+      color: var(--sage-dark);
+      border: 1px solid rgba(124,163,125,0.18);
+      white-space: nowrap;
+    }
+
+    .editor-stage {
+      min-height: 0;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+    }
+
+    .editor-toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 24px;
+      border-bottom: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .toolbar-left, .toolbar-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .code-wrap {
+      min-height: 0;
+      display: grid;
+      grid-template-columns: 64px 1fr;
+      background: linear-gradient(180deg, rgba(255,255,255,0.26), rgba(255,255,255,0.12));
+    }
+
+    .gutter {
+      overflow: hidden;
+      border-right: 1px solid var(--line);
+      padding: 20px 12px 20px 0;
+      text-align: right;
+      font-family: var(--mono);
+      font-size: 13px;
+      line-height: 2;
+      color: #a0abb7;
+      user-select: none;
+      background: rgba(255,255,255,0.18);
+      white-space: pre-line;
+    }
+
+    #editor {
+      width: 100%;
+      height: 100%;
+      border: none;
+      outline: none;
+      resize: none;
+      padding: 20px 24px;
+      background: transparent;
+      color: var(--text);
+      font-family: var(--mono);
+      font-size: 14px;
+      line-height: 2;
+      tab-size: 4;
+      caret-color: var(--sage-dark);
+    }
+
+    #editor::placeholder { color: #a4aeb8; }
+
+    .editor-footer {
+      border-top: 1px solid var(--line);
+      padding: 14px 24px;
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .output-panel { min-width: 0; }
+
+    .output-head {
+      padding: 22px 22px 16px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 14px;
+    }
+
+    .output-title {
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      margin-bottom: 4px;
+    }
+
+    .output-sub {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .result-status {
+      padding: 10px 14px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 700;
+      background: rgba(255,255,255,0.8);
+      border: 1px solid var(--line);
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    .out-scroll {
+      min-height: 0;
+      overflow: auto;
+      padding: 18px;
+    }
+
+    .empty-state {
+      min-height: 100%;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      padding: 20px;
+    }
+
+    .empty-card {
+      max-width: 280px;
+      background: rgba(255,255,255,0.78);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      padding: 28px 22px;
+      box-shadow: var(--shadow-soft);
+    }
+
+    .empty-emoji {
+      font-size: 34px;
+      margin-bottom: 12px;
+    }
+
+    .empty-title {
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      margin-bottom: 8px;
+    }
+
+    .empty-sub {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .metric {
+      background: rgba(255,255,255,0.82);
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      padding: 16px;
+    }
+
+    .metric-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--soft);
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .metric-value {
+      font-size: 26px;
+      font-weight: 800;
+      letter-spacing: -0.05em;
+      margin-bottom: 6px;
+    }
+
+    .metric-sub {
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .bar {
+      height: 7px;
+      border-radius: 999px;
+      background: rgba(23, 33, 43, 0.07);
+      overflow: hidden;
+      margin-top: 12px;
+    }
+
+    .bar-fill {
+      height: 100%;
+      border-radius: inherit;
+      transition: width 0.6s ease;
+    }
+
+    .suggestions-section {
+      margin-bottom: 14px;
+    }
+
+    .section-card {
+      background: rgba(255,255,255,0.80);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      overflow: hidden;
+      margin-bottom: 14px;
+    }
+
+    .section-head {
+      padding: 16px 18px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .section-title {
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 4px;
+    }
+
+    .section-sub {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .meal-grid {
+      display: grid;
+      gap: 14px;
+      padding: 14px;
+    }
+
+    .meal-card {
+      background: rgba(255,255,255,0.92);
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      overflow: hidden;
+      box-shadow: var(--shadow-soft);
+    }
+
+    .meal-image {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+      display: block;
+      background: #e9e5de;
+    }
+
+    .meal-body {
+      padding: 16px;
+    }
+
+    .meal-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .meal-title {
+      font-size: 16px;
+      font-weight: 800;
+      line-height: 1.4;
+      letter-spacing: -0.02em;
+    }
+
+    .meal-kcal {
+      flex-shrink: 0;
+      padding: 7px 10px;
+      border-radius: 999px;
+      background: rgba(124,163,125,0.12);
+      color: var(--sage-dark);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .meal-desc {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .report-card {
+      background: rgba(255,255,255,0.8);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      overflow: hidden;
+    }
+
+    .report-head {
+      padding: 16px 18px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .report-head-title {
+      font-size: 15px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    .report-head-sub {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .report-log {
+      padding: 12px;
+      display: grid;
+      gap: 8px;
+    }
+
+    .line {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 12px;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.5);
+      border: 1px solid rgba(23,33,43,0.04);
+      font-family: var(--mono);
+      font-size: 12.5px;
+      line-height: 1.7;
+      color: #31404d;
+      word-break: break-word;
+    }
+
+    .tag {
+      flex-shrink: 0;
+      border-radius: 999px;
+      padding: 5px 8px;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-family: var(--sans);
+      background: rgba(23,33,43,0.06);
+      color: var(--muted);
+    }
+
+    .t-ok { background: rgba(124,163,125,0.14); color: var(--sage-dark); }
+    .t-warn { background: rgba(214,177,109,0.18); color: #9a7629; }
+    .t-err { background: rgba(217,112,98,0.14); color: #b34f41; }
+    .t-imc { background: rgba(127,158,184,0.18); color: #5c7891; }
+    .t-meal { background: rgba(240,176,137,0.17); color: #b96b3f; }
+    .t-obj { background: rgba(124,163,125,0.12); color: var(--sage-dark); }
+    .t-tip { background: rgba(86,104,77,0.12); color: var(--olive); }
+
+    .output-footer {
+      padding: 14px 18px;
+      border-top: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 26px;
+      transform: translateX(-50%) translateY(12px);
+      background: rgba(23,33,43,0.92);
+      color: white;
+      padding: 12px 18px;
+      border-radius: 999px;
+      font-size: 14px;
+      box-shadow: 0 16px 34px rgba(23,33,43,0.22);
+      opacity: 0;
+      pointer-events: none;
+      transition: 0.25s ease;
+      z-index: 30;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(70,80,90,0.16);
+      border-radius: 999px;
+    }
+    ::-webkit-scrollbar-track { background: transparent; }
+
+    @media (max-width: 1220px) {
+      .main { grid-template-columns: 300px 1fr; }
+      .output-panel { grid-column: span 2; }
+    }
+
+    @media (max-width: 900px) {
+      body { overflow: auto; }
+      .app {
+        height: auto;
+        min-height: 100vh;
+      }
+      .topbar { grid-template-columns: 1fr; }
+      .main { grid-template-columns: 1fr; }
+      .output-panel { grid-column: auto; }
+      .metrics { grid-template-columns: 1fr; }
+    }
+  </style>
 </head>
 <body>
+  <div class="toast" id="toast"></div>
 
-<!-- TOAST NOTIFICATION -->
-<div class="toast" id="toast"></div>
-
-<div class="app">
-
-  <!-- ════════ TOPBAR ════════ -->
-  <header class="topbar">
-
-    <!-- Brand -->
-    <div class="brand">
-      <div class="brand-logo">🥗</div>
-      <div class="brand-text">
-        <div class="brand-name">NutriLang Studio</div>
-        <div class="brand-sub">Coach Nutritionnel Programmable</div>
-      </div>
-    </div>
-
-    <!-- Tabs -->
-    <div class="tabs">
-      <div class="tab active">
-        <div class="tab-indicator"></div>
-        <span>programme.nl</span>
-      </div>
-    </div>
-
-    <!-- Actions -->
-    <div class="topbar-actions">
-      <button class="btn btn-ghost" onclick="loadExample()" title="Charger l'exemple">
-        <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
-          <rect x="2" y="2" width="12" height="12" rx="2"/>
-          <path d="M5 5.5h6M5 8h4M5 10.5h5"/>
-        </svg>
-        Exemple
-      </button>
-      <button class="btn btn-ghost" onclick="formatCode()" title="Formater le code">
-        <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
-          <path d="M2 4h12M2 8h8M2 12h10"/>
-        </svg>
-        Formater
-      </button>
-      <div class="divider-v"></div>
-      <button class="btn btn-ghost" onclick="clearEditor()" title="Effacer">
-        <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
-          <path d="M3 4h10M6 4V3h4v1M5 4v8a1 1 0 001 1h4a1 1 0 001-1V4"/>
-        </svg>
-        Effacer
-      </button>
-      <button class="btn btn-run" id="runBtn" onclick="analyser()">
-        <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor">
-          <path d="M5 3l9 5-9 5V3z"/>
-        </svg>
-        Exécuter
-        <span class="kbd">⌘↵</span>
-      </button>
-    </div>
-
-  </header>
-
-  <!-- ════════ STATUS BAR ════════ -->
-  <div class="statusbar">
-    <div class="statusbar-item">
-      <svg width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
-        <path d="M2 12L7 5l3 4 2-3 3 6"/>
-      </svg>
-      Workspace
-    </div>
-    <span class="statusbar-sep">/</span>
-    <div class="statusbar-item">Nutrition</div>
-    <span class="statusbar-sep">/</span>
-    <span class="statusbar-file">programme.nl</span>
-
-    <div class="statusbar-right">
-      <span id="charCountStat">0 car · 0 lignes</span>
-      <span id="cursorStat" style="font-family:var(--font-mono)">Ln 1, Col 1</span>
-      <div class="server-status">
-        <span class="server-dot"></span>
-        Flask · localhost:5000
-      </div>
-    </div>
-  </div>
-
-  <!-- ════════ MAIN PANELS ════════ -->
-  <main class="panels">
-
-    <!-- ── EDITOR PANEL ── -->
-    <div class="editor-panel">
-
-      <div class="panel-header">
-        <div class="panel-header-left">
-          <svg class="panel-icon" width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
-            <polyline points="4,5 1,8 4,11"/>
-            <polyline points="12,5 15,8 12,11"/>
-            <line x1="9" y1="3" x2="7" y2="13"/>
-          </svg>
-          <span>Éditeur de code</span>
-          <span class="lang-badge">NutriLang 1.0</span>
+  <div class="app">
+    <header class="shell topbar">
+      <div class="brand">
+        <div class="brand-badge">🥗</div>
+        <div class="brand-copy">
+          <div class="eyebrow">Nutrition DSL Platform</div>
+          <div class="brand-title">NutriLang Studio</div>
+          <div class="brand-sub">Choisis un exemple, modifie le code, puis exécute l’analyse.</div>
         </div>
-        <span id="cursorInfo" style="font-size:10.5px;color:var(--text-muted);font-family:var(--font-mono)">Ln 1, Col 1</span>
       </div>
 
-      <div class="editor-body">
-        <div class="gutter" id="lineNums">1</div>
-        <textarea
-          id="editor"
-          autocomplete="off"
-          autocorrect="off"
-          autocapitalize="off"
-          spellcheck="false"
-          placeholder="// Écrivez votre programme NutriLang ici...
+      <div class="status-chip">
+        <span class="status-dot"></span>
+        <span id="serverStatusLabel">Flask · localhost:5000</span>
+      </div>
+
+      <div class="actions">
+        <button class="btn btn-soft" onclick="loadExample()">Exemple</button>
+        <button class="btn btn-soft" onclick="formatCode()">Formater</button>
+        <button class="btn btn-soft" onclick="clearEditor()">Effacer</button>
+        <button class="btn btn-primary" id="runBtn" onclick="analyser()">
+          Exécuter
+          <span class="kbd">Ctrl + Entrée</span>
+        </button>
+      </div>
+    </header>
+
+    <main class="main">
+      <aside class="panel side">
+        <div class="mini-card">
+          <div class="mini-kicker">Guide rapide</div>
+          <div class="mini-title">Commandes utiles</div>
+          <div class="mini-text">
+            Utilise <strong>Calculer_IMC</strong>, <strong>Repas</strong>, <strong>Verifier_healthy</strong>,
+            <strong>Suggestion_healthy</strong>, <strong>Conseil</strong> et <strong>Si / Sinon / Finsi</strong>.
+          </div>
+        </div>
+
+        <div class="mini-card">
+          <div class="mini-kicker">Workspace</div>
+          <div class="mini-title">Session</div>
+          <div class="stat-list">
+            <div class="stat-row"><span>Fichier</span><strong>programme.nl</strong></div>
+            <div class="stat-row"><span>Langage</span><strong>NutriLang 1.0</strong></div>
+            <div class="stat-row"><span>Lignes</span><strong id="lineCountSide">0</strong></div>
+          </div>
+        </div>
+
+        <div class="mini-card">
+          <div class="mini-kicker">Exemples</div>
+          <div class="mini-title">Choisir un code par défaut</div>
+          <div class="mini-text">
+            Clique sur un exemple pour charger automatiquement un programme différent dans l’éditeur.
+          </div>
+
+          <div class="examples">
+            <button class="example-btn" data-example="imc" onclick="insertExample('imc')">
+              <strong>Exemple 1 — Calcul IMC</strong><br>
+              Variables simples + calcul de l’IMC.
+            </button>
+
+            <button class="example-btn" data-example="healthy" onclick="insertExample('healthy')">
+              <strong>Exemple 2 — Vérification repas</strong><br>
+              Déclaration de repas et test healthy.
+            </button>
+
+            <button class="example-btn" data-example="condition" onclick="insertExample('condition')">
+              <strong>Exemple 3 — Condition Si / Sinon</strong><br>
+              Conseils selon la valeur de l’IMC.
+            </button>
+
+            <button class="example-btn" data-example="full" onclick="insertExample('full')">
+              <strong>Exemple 4 — Programme complet</strong><br>
+              Objectif, suggestions, conditions et rapport.
+            </button>
+          </div>
+        </div>
+      </aside>
+
+      <section class="panel editor-panel">
+        <div class="editor-head">
+          <div>
+            <div class="editor-title">Éditeur principal</div>
+            <div class="editor-sub">Écris ton programme NutriLang et lance l’analyse.</div>
+          </div>
+          <div class="pill">Studio Mode</div>
+        </div>
+
+        <div class="editor-stage">
+          <div class="editor-toolbar">
+            <div class="toolbar-left">
+              <span>Document actif</span>
+              <span class="pill" style="padding:6px 10px; font-size:11px;">programme.nl</span>
+            </div>
+            <div class="toolbar-right">
+              <span id="charCountStat">0 caractères</span>
+              <span id="cursorStat">Ln 1, Col 1</span>
+            </div>
+          </div>
+
+          <div class="code-wrap">
+            <div class="gutter" id="lineNums">1</div>
+            <textarea
+              id="editor"
+              spellcheck="false"
+              autocomplete="off"
+              autocorrect="off"
+              autocapitalize="off"
+              placeholder="// Écrivez ici votre programme NutriLang
+// Exemple :
 // poids := 75
 // taille := 1.75
-// Calculer_IMC poids taille">
-        </textarea>
-      </div>
-
-      <div class="editor-footer">
-        <span id="charCount">0 caractères · 0 lignes</span>
-        <span>UTF-8 · NutriLang · Espaces: 4</span>
-      </div>
-
-    </div>
-
-    <!-- ── OUTPUT PANEL ── -->
-    <div class="output-panel">
-
-      <div class="panel-header">
-        <div class="panel-header-left">
-          <svg class="panel-icon" width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
-            <rect x="1" y="1" width="14" height="14" rx="2"/>
-            <polyline points="4,5.5 7,8.5 4,11.5"/>
-            <line x1="8.5" y1="11.5" x2="12" y2="11.5"/>
-          </svg>
-          <span>Résultats</span>
-        </div>
-        <div class="status-pill sp-ready" id="statusPill">
-          <div class="sp-dot"></div>
-          <span id="statusText">Prêt</span>
-        </div>
-      </div>
-
-      <div class="out-scroll" id="outputArea">
-        <div class="empty-state" id="emptyState">
-          <div class="empty-icon">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-              <circle cx="12" cy="12" r="10"/>
-              <polygon points="10,8 16,12 10,16 10,8"/>
-            </svg>
+// Calculer_IMC poids taille"></textarea>
           </div>
-          <div class="empty-title">Aucun résultat</div>
-          <div class="empty-sub">Exécutez votre programme pour voir l'analyse nutritionnelle</div>
+
+          <div class="editor-footer">
+            <span id="charCount">0 caractères · 0 lignes</span>
+            <span>Inter + JetBrains Mono · Nutritional Programming Interface</span>
+          </div>
         </div>
-      </div>
+      </section>
 
-      <div class="out-footer">
-        <span id="execTimeLabel"></span>
-        <span id="outVersion" style="font-family:var(--font-mono)">v1.0.0</span>
-      </div>
+      <section class="panel output-panel">
+        <div class="output-head">
+          <div>
+            <div class="output-title">Analyse & rapport</div>
+            <div class="output-sub">Résultats, métriques et suggestions de repas avec images.</div>
+          </div>
+          <div class="result-status" id="statusText">Prêt</div>
+        </div>
 
-    </div>
+        <div class="out-scroll" id="outputArea">
+          <div class="empty-state">
+            <div class="empty-card">
+              <div class="empty-emoji">✨</div>
+              <div class="empty-title">Aucun résultat pour le moment</div>
+              <div class="empty-sub">
+                Lance ton programme pour afficher l’analyse nutritionnelle et les cartes de suggestions.
+              </div>
+            </div>
+          </div>
+        </div>
 
-  </main>
-</div>
+        <div class="output-footer">
+          <span id="execTimeLabel">En attente d’exécution</span>
+          <span>NutriLang Studio · Healthy UI</span>
+        </div>
+      </section>
+    </main>
+  </div>
 
-<!-- ════════════════════════════════════════════
-     SCRIPT
-════════════════════════════════════════════ -->
-<script>
-/* ─── Éléments DOM ─── */
-const editorEl    = document.getElementById('editor');
-const lineNumsEl  = document.getElementById('lineNums');
-const charCountEl = document.getElementById('charCount');
-const charCountSt = document.getElementById('charCountStat');
-const cursorInfoEl= document.getElementById('cursorInfo');
-const cursorStEl  = document.getElementById('cursorStat');
-const outputArea  = document.getElementById('outputArea');
-const statusPill  = document.getElementById('statusPill');
-const statusText  = document.getElementById('statusText');
-const execTimeLbl = document.getElementById('execTimeLabel');
-const runBtn      = document.getElementById('runBtn');
-const toastEl     = document.getElementById('toast');
+  <script>
+    const editorEl = document.getElementById('editor');
+    const lineNumsEl = document.getElementById('lineNums');
+    const charCountEl = document.getElementById('charCount');
+    const charCountStatEl = document.getElementById('charCountStat');
+    const cursorStatEl = document.getElementById('cursorStat');
+    const lineCountSideEl = document.getElementById('lineCountSide');
+    const outputArea = document.getElementById('outputArea');
+    const statusText = document.getElementById('statusText');
+    const execTimeLabel = document.getElementById('execTimeLabel');
+    const runBtn = document.getElementById('runBtn');
+    const toastEl = document.getElementById('toast');
 
-/* ─── Programme exemple complet ─── */
-const EXAMPLE_CODE = `// ================================================
-//  Exemple Complet - NutriLang Coach v1.0
-//  Contient toutes les fonctionnalités importantes
-// ================================================
+    const mealImages = {
+      "Salade de poulet grillé aux légumes frais": "/static/images/salade-poulet.jpg",
+      "Yaourt grec nature avec baies et amandes": "/static/images/yaourt-grec.jpg",
+      "Poisson blanc vapeur avec brocoli et quinoa": "/static/images/poisson-brocoli.jpg",
+      "Omelette aux 4 œufs avec avocat et pain complet": "/static/images/omelette-avocat.jpg",
+      "Poulet rôti avec riz complet et légumes": "/static/images/poulet-riz.jpg",
+      "Shake protéiné banane et beurre de cacahuète": "/static/images/shake-banane.jpg",
+      "Bowl quinoa saumon avocat": "/static/images/bowl-saumon.jpg",
+      "Salade complète thon œuf et légumes": "/static/images/salade-thon.jpg",
+      "Lentilles corail aux épinards et carottes": "/static/images/lentilles-corail.jpg"
+    };
+
+    const EXAMPLES = {
+      imc: `// Exemple 1 : Calcul simple de l'IMC
+poids := 72
+taille := 1.70
+
+Calculer_IMC poids taille
+afficher_nutrition`,
+
+      healthy: `// Exemple 2 : Déclaration et vérification des repas
+Repas petit_dejeuner := 460
+Repas dejeuner := 780
+Repas diner := 590
+
+Verifier_healthy petit_dejeuner
+Verifier_healthy dejeuner
+Verifier_healthy diner
+
+afficher_nutrition`,
+
+      condition: `// Exemple 3 : Conseils selon l'IMC
+poids := 95
+taille := 1.72
+
+Calculer_IMC poids taille
+
+Si IMC > 25 Alors
+    Conseil "Vous êtes en surpoids. Une réduction progressive des calories est conseillée."
+Sinon
+    Conseil "Votre IMC est dans une zone correcte. Continuez vos bonnes habitudes."
+Finsi
+
+afficher_nutrition`,
+
+      full: `// Exemple 4 : Programme complet NutriLang
 poids := 86
 taille := 1.76
 age := 29
-// 1. Calcul de l'IMC
+
 Calculer_IMC poids taille
-// 2. Définition de l'objectif
 Objectif perte_poids
-// 3. Déclaration des repas
+
 Repas petit_dejeuner := 460
 Repas dejeuner := 780
 Repas collation := 320
 Repas diner := 590
-// 4. Vérification de la qualité des repas
+
 Verifier_healthy petit_dejeuner
 Verifier_healthy dejeuner
 Verifier_healthy diner
-// 5. Suggestions de repas adaptés à l'objectif
+
 Suggestion_healthy perte_poids
-// 6. Structure conditionnelle complète
+
 Si IMC > 25 Alors
-    Conseil "Vous êtes actuellement en surpoids. Suivez les suggestions pour réduire progressivement vos calories."
+    Conseil "Vous êtes actuellement en surpoids. Réduisez progressivement les excès caloriques."
 Sinon
-    Si IMC < 18.5 Alors
-        Conseil "Vous êtes en insuffisance pondérale. Augmentez les portions protéinées."
-    Sinon
-        Conseil "Votre IMC est dans une bonne zone. Continuez à maintenir cet équilibre."
-    Finsi
+    Conseil "Votre IMC est dans une bonne zone. Continuez à maintenir cet équilibre."
 Finsi
-// 7. Conseil général
-Conseil "Buvez au moins 2.5 litres d'eau par jour et marchez 8000 pas quotidiennement."
-// 8. Affichage final du rapport
-afficher_nutrition`;
 
-/* ─── Numéros de lignes ─── */
-function updateLineNumbers() {
-  const lines = editorEl.value.split('\n');
-  lineNumsEl.textContent = lines.map((_, i) => i + 1).join('\n');
-  const info = `${editorEl.value.length} caractères · ${lines.length} lignes`;
-  charCountEl.textContent = info;
-  charCountSt.textContent = `${editorEl.value.length} car · ${lines.length} lignes`;
-}
+afficher_nutrition`
+    };
 
-editorEl.addEventListener('input', updateLineNumbers);
-editorEl.addEventListener('scroll', () => {
-  lineNumsEl.scrollTop = editorEl.scrollTop;
-});
+    let currentExample = 'full';
 
-/* ─── Curseur ─── */
-function updateCursor() {
-  const txt  = editorEl.value.substring(0, editorEl.selectionStart);
-  const line = txt.split('\n').length;
-  const col  = txt.split('\n').pop().length + 1;
-  const info = `Ln ${line}, Col ${col}`;
-  cursorInfoEl.textContent = info;
-  cursorStEl.textContent   = info;
-}
-
-editorEl.addEventListener('click',  updateCursor);
-editorEl.addEventListener('keyup',  updateCursor);
-
-/* ─── Raccourcis clavier ─── */
-editorEl.addEventListener('keydown', e => {
-  // Tab → 4 espaces
-  if (e.key === 'Tab') {
-    e.preventDefault();
-    const s  = editorEl.selectionStart;
-    const en = editorEl.selectionEnd;
-    editorEl.value = editorEl.value.substring(0, s) + '    ' + editorEl.value.substring(en);
-    editorEl.selectionStart = editorEl.selectionEnd = s + 4;
-    updateLineNumbers();
-  }
-  // Ctrl/Cmd + Entrée → Exécuter
-  if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
-    e.preventDefault();
-    analyser();
-  }
-});
-
-/* ─── Status pill ─── */
-function setStatus(cls, label) {
-  statusPill.className = 'status-pill ' + cls;
-  statusText.textContent = label;
-}
-
-/* ─── Toast notification ─── */
-function showToast(msg, duration = 2200) {
-  toastEl.textContent = msg;
-  toastEl.classList.add('show');
-  setTimeout(() => toastEl.classList.remove('show'), duration);
-}
-
-/* ─── Escape HTML ─── */
-function esc(s) {
-  return String(s)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;');
-}
-
-/* ─── Rendu de la sortie ─── */
-function renderOutput(raw) {
-  const lines = raw.split('\n').filter(l => l.trim());
-
-  /* Extraire les métriques pour les cartes */
-  let imc = null, totalKcal = 0, nbRepas = 0, obj = '', age = null;
-
-  lines.forEach(line => {
-    // IMC
-    const imcM = line.match(/IMC calculé\s*:\s*([\d.]+)/i);
-    if (imcM) imc = parseFloat(imcM[1]);
-
-    // Calories
-    const kcalM = line.match(/Repas .+ déclaré \((\d+)\s*kcal\)/i);
-    if (kcalM) { totalKcal += parseInt(kcalM[1]); nbRepas++; }
-
-    // Objectif
-    const objM = line.match(/Objectif\s*:\s*(\S+)/i);
-    if (objM) obj = objM[1];
-  });
-
-  const wrapper = document.createElement('div');
-
-  /* ── Métriques ── */
-  if (imc !== null || totalKcal > 0) {
-    const imcClass   = imc === null ? 'cv-blue'
-                     : imc < 18.5  ? 'cv-amber'
-                     : imc < 25    ? 'cv-green'
-                     : imc < 30    ? 'cv-amber'
-                     : 'cv-red';
-
-    const imcBarCls  = imc === null ? 'bg-blue'
-                     : imc < 18.5  ? 'bg-amber'
-                     : imc < 25    ? 'bg-green'
-                     : imc < 30    ? 'bg-amber'
-                     : 'bg-red';
-
-    const imcLabel   = imc === null ? '—'
-                     : imc < 18.5  ? 'Insuffisance pondérale'
-                     : imc < 25    ? 'Poids normal ✓'
-                     : imc < 30    ? 'Surpoids'
-                     : 'Obésité';
-
-    const kcalCls    = totalKcal > 2500 ? 'cv-red'
-                     : totalKcal > 1800 ? 'cv-amber'
-                     : 'cv-green';
-    const kcalBarCls = totalKcal > 2500 ? 'bg-red'
-                     : totalKcal > 1800 ? 'bg-amber'
-                     : 'bg-green';
-
-    // Pourcentage barre IMC (0=16 → 40, clampé)
-    const imcPct   = imc !== null ? Math.min(100, Math.max(5, ((imc - 16) / (40 - 16)) * 100)).toFixed(1) : 0;
-    // Pourcentage barre calories (objectif 2000 kcal)
-    const kcalPct  = Math.min(100, (totalKcal / 2000 * 100)).toFixed(1);
-
-    const grid = document.createElement('div');
-    grid.className = 'metrics-grid';
-    grid.innerHTML = (imc !== null ? `
-      <div class="metric-card">
-        <div class="mc-label">Indice de Masse Corporelle</div>
-        <div class="mc-value ${imcClass}">${imc.toFixed(2)}</div>
-        <div class="mc-sub">${imcLabel}</div>
-        <div class="mc-bar">
-          <div class="mc-bar-fill ${imcBarCls}" style="width:${imcPct}%"></div>
-        </div>
-      </div>` : '') +
-      (obj ? `
-      <div class="metric-card">
-        <div class="mc-label">Objectif</div>
-        <div class="mc-value cv-purple" style="font-size:15px;margin-bottom:8px">${obj.replace(/_/g, ' ')}</div>
-        <div class="mc-sub">Programme personnalisé actif</div>
-        <div class="mc-bar">
-          <div class="mc-bar-fill" style="width:65%;background:var(--purple)"></div>
-        </div>
-      </div>` : '');
-
-    wrapper.appendChild(grid);
-
-    /* Barre de progression calories */
-    if (totalKcal > 0) {
-      const prog = document.createElement('div');
-      prog.className = 'kcal-progress';
-      prog.innerHTML = `
-        <div class="kcal-progress-header">
-          <span class="kcal-progress-label">Calories journalières (${nbRepas} repas)</span>
-          <span class="kcal-progress-val ${kcalCls}">${totalKcal} kcal</span>
-        </div>
-        <div class="kcal-bar-track">
-          <div class="kcal-bar-fill ${kcalBarCls}" style="width:${kcalPct}%"></div>
-        </div>`;
-      wrapper.appendChild(prog);
-    }
-  }
-
-  /* ── Séparateur ── */
-  const sep = document.createElement('div');
-  sep.className = 'out-sep';
-  wrapper.appendChild(sep);
-
-  /* ── Section: Log d'exécution ── */
-  const secHead = document.createElement('div');
-  secHead.className = 'out-section-head';
-  secHead.textContent = 'Log d\'exécution';
-  wrapper.appendChild(secHead);
-
-  /* ── Lignes de sortie ── */
-  const block = document.createElement('div');
-  block.className = 'out-block';
-
-  lines.forEach(line => {
-    const row = document.createElement('div');
-    row.className = 'out-line';
-
-    const isComment = line.trim().startsWith('//');
-    if (isComment) row.classList.add('is-comment');
-
-    let tagHtml  = '';
-    let textCls  = 't-info';
-
-    if (isComment) {
-      textCls = 't-comment';
-    } else if (/IMC calculé/i.test(line)) {
-      textCls  = 't-imc';
-      tagHtml  = '<span class="out-tag tag-imc">IMC</span>';
-    } else if (/Objectif/i.test(line)) {
-      textCls = 't-obj';
-      tagHtml = '<span class="out-tag tag-obj">OBJ</span>';
-    } else if (/:=/.test(line)) {
-      textCls = 't-assign';
-    } else if (/Repas .+ déclaré/i.test(line)) {
-      textCls = 't-repas';
-      tagHtml = '<span class="out-tag tag-repas">REPAS</span>';
-    } else if (/HEALTHY/i.test(line)) {
-      textCls = 't-healthy';
-      tagHtml = '<span class="out-tag tag-ok">OK</span>';
-    } else if (/TROP CALORIQUE/i.test(line)) {
-      textCls = 't-warn';
-      tagHtml = '<span class="out-tag tag-err">!</span>';
-    } else if (/Suggestion/i.test(line)) {
-      textCls = 't-obj';
-      tagHtml = '<span class="out-tag tag-obj">SUGG</span>';
-    } else if (/Conseil/i.test(line)) {
-      textCls = 't-conseil';
-      tagHtml = '<span class="out-tag tag-conseil">CONSEIL</span>';
-    } else if (/RAPPORT/i.test(line)) {
-      textCls = 't-rhead';
-    } else if (/->/.test(line)) {
-      textCls = 't-rrow';
-    } else if (/^=+$/.test(line.trim())) {
-      textCls = 't-rsep';
-    } else if (/erreur|error/i.test(line)) {
-      textCls = 't-err';
-      tagHtml = '<span class="out-tag tag-err">ERR</span>';
+    function showToast(message, duration = 2200) {
+      toastEl.textContent = message;
+      toastEl.classList.add('show');
+      setTimeout(() => toastEl.classList.remove('show'), duration);
     }
 
-    row.innerHTML = tagHtml + `<span class="${textCls}">${esc(line)}</span>`;
-    block.appendChild(row);
-  });
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+    }
 
-  wrapper.appendChild(block);
-  return wrapper;
-}
+    function updateLineNumbers() {
+      const lines = editorEl.value.split('\n');
+      lineNumsEl.textContent = lines.map((_, i) => i + 1).join('\n');
+      const lineCount = lines.length;
+      const charCount = editorEl.value.length;
+      charCountEl.textContent = `${charCount} caractères · ${lineCount} lignes`;
+      charCountStatEl.textContent = `${charCount} caractères`;
+      lineCountSideEl.textContent = lineCount;
+    }
 
-/* ─── Analyser / Exécuter ─── */
-async function analyser() {
-  if (runBtn.classList.contains('loading')) return;
+    function updateCursorPosition() {
+      const textUntilCursor = editorEl.value.substring(0, editorEl.selectionStart);
+      const line = textUntilCursor.split('\n').length;
+      const col = textUntilCursor.split('\n').pop().length + 1;
+      cursorStatEl.textContent = `Ln ${line}, Col ${col}`;
+    }
 
-  const code = editorEl.value.trim();
-  if (!code) {
-    showToast('⚠ L\'éditeur est vide');
-    return;
-  }
+    function setActiveExample(type) {
+      currentExample = type;
+      document.querySelectorAll('.example-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.example === type);
+      });
+    }
 
-  // UI → loading
-  runBtn.classList.add('loading');
-  runBtn.innerHTML = `
-    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-      <circle cx="12" cy="12" r="10" opacity=".3"/>
-      <path d="M12 2a10 10 0 010 20" stroke-dasharray="20" stroke-dashoffset="0">
-        <animateTransform attributeName="transform" type="rotate" from="0 12 12" to="360 12 12" dur="0.8s" repeatCount="indefinite"/>
-      </path>
-    </svg>
-    Analyse en cours...`;
-  setStatus('sp-run', 'Analyse en cours');
-  outputArea.innerHTML = '';
-  execTimeLbl.textContent = '';
+    editorEl.addEventListener('input', updateLineNumbers);
+    editorEl.addEventListener('input', updateCursorPosition);
+    editorEl.addEventListener('click', updateCursorPosition);
+    editorEl.addEventListener('keyup', updateCursorPosition);
 
-  const t0 = performance.now();
-
-  try {
-    const response = await fetch('/execute', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ code })
+    editorEl.addEventListener('scroll', () => {
+      lineNumsEl.scrollTop = editorEl.scrollTop;
     });
 
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}`);
+    editorEl.addEventListener('keydown', (e) => {
+      if (e.key === 'Tab') {
+        e.preventDefault();
+        const start = editorEl.selectionStart;
+        const end = editorEl.selectionEnd;
+        editorEl.value = editorEl.value.substring(0, start) + '    ' + editorEl.value.substring(end);
+        editorEl.selectionStart = editorEl.selectionEnd = start + 4;
+        updateLineNumbers();
+        updateCursorPosition();
+      }
+
+      if (e.ctrlKey && e.key === 'Enter') {
+        e.preventDefault();
+        analyser();
+      }
+    });
+
+    function loadExample() {
+      insertExample(currentExample);
     }
 
-    const data = await response.json();
-    const ms   = (performance.now() - t0).toFixed(0);
+    function insertExample(type) {
+      editorEl.value = EXAMPLES[type] || '';
+      setActiveExample(type);
+      updateLineNumbers();
+      updateCursorPosition();
+      editorEl.focus();
+      showToast('Exemple chargé');
+    }
 
-    outputArea.innerHTML = '';
-    outputArea.appendChild(renderOutput(data.output || data.result || ''));
-
-    const hasError = /erreur|error/i.test(data.output || '');
-    setStatus(hasError ? 'sp-err' : 'sp-ok', hasError ? 'Erreur détectée' : 'Succès');
-    execTimeLbl.textContent = `Exécuté en ${ms}ms`;
-
-    if (!hasError) showToast('✓ Analyse terminée avec succès');
-
-  } catch (err) {
-    const ms = (performance.now() - t0).toFixed(0);
-
-    outputArea.innerHTML = `
-      <div class="empty-state">
-        <div class="empty-icon" style="border-color:rgba(239,83,80,.25)">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ef5350" stroke-width="1.5">
-            <circle cx="12" cy="12" r="10"/>
-            <line x1="15" y1="9" x2="9" y2="15"/>
-            <line x1="9" y1="9" x2="15" y2="15"/>
-          </svg>
+    function clearEditor() {
+      editorEl.value = '';
+      updateLineNumbers();
+      updateCursorPosition();
+      outputArea.innerHTML = `
+        <div class="empty-state">
+          <div class="empty-card">
+            <div class="empty-emoji">✨</div>
+            <div class="empty-title">Aucun résultat pour le moment</div>
+            <div class="empty-sub">
+              Lance ton programme pour afficher l’analyse nutritionnelle et les cartes de suggestions.
+            </div>
+          </div>
         </div>
-        <div class="empty-title" style="color:var(--red)">Serveur inaccessible</div>
-        <div class="empty-sub">
-          Vérifiez que Flask tourne : <code style="color:var(--accent);font-size:11px">python server.py</code>
+      `;
+      statusText.textContent = 'Prêt';
+      execTimeLabel.textContent = 'En attente d’exécution';
+      editorEl.focus();
+      showToast('Éditeur effacé');
+    }
+
+    function formatCode() {
+      const lines = editorEl.value.split('\n');
+      let depth = 0;
+
+      const formatted = lines.map(line => {
+        const trimmed = line.trim();
+        if (!trimmed) return '';
+
+        if (/^(Finsi|Sinon)/i.test(trimmed)) {
+          depth = Math.max(0, depth - 1);
+        }
+
+        const result = '    '.repeat(depth) + trimmed;
+
+        if (/^(Si .+ Alors|Sinon)$/i.test(trimmed)) {
+          depth++;
+        }
+
+        return result;
+      });
+
+      editorEl.value = formatted.join('\n');
+      updateLineNumbers();
+      updateCursorPosition();
+      showToast('Code formaté');
+    }
+
+    function classifyLine(line) {
+      if (/erreur|error/i.test(line)) return { tag: 'Erreur', className: 't-err' };
+      if (/IMC calcule|IMC calculé/i.test(line)) return { tag: 'IMC', className: 't-imc' };
+      if (/Repas .*declare|Repas .*déclare/i.test(line)) return { tag: 'Repas', className: 't-meal' };
+      if (/HEALTHY/i.test(line)) return { tag: 'OK', className: 't-ok' };
+      if (/TROP CALORIQUE/i.test(line)) return { tag: 'Alerte', className: 't-warn' };
+      if (/Conseil/i.test(line)) return { tag: 'Conseil', className: 't-tip' };
+      if (/Objectif/i.test(line)) return { tag: 'Objectif', className: 't-obj' };
+      return { tag: 'Log', className: '' };
+    }
+
+    function buildMetrics(lines) {
+      let imc = null;
+      let totalKcal = 0;
+      let objective = '';
+      let mealCount = 0;
+
+      for (const line of lines) {
+        const imcMatch = line.match(/IMC calcule\s*:\s*([\d.]+)|IMC calculé\s*:\s*([\d.]+)/i);
+        if (imcMatch) imc = parseFloat(imcMatch[1] || imcMatch[2]);
+
+        const kcalMatch = line.match(/Repas .*?\((\d+)\s*kcal\)/i);
+        if (kcalMatch) {
+          totalKcal += parseInt(kcalMatch[1], 10);
+          mealCount++;
+        }
+
+        const objMatch = line.match(/Objectif.*?:\s*(.+)$/i);
+        if (objMatch) objective = objMatch[1].trim();
+      }
+
+      return { imc, totalKcal, objective, mealCount };
+    }
+
+    function imcLabel(imc) {
+      if (imc === null) return 'Pas encore calculé';
+      if (imc < 18.5) return 'Insuffisance pondérale';
+      if (imc < 25) return 'Zone normale';
+      if (imc < 30) return 'Surpoids';
+      return 'Obésité';
+    }
+
+    function imcColor(imc) {
+      if (imc === null) return 'var(--blue)';
+      if (imc < 18.5) return 'var(--gold)';
+      if (imc < 25) return 'var(--sage)';
+      if (imc < 30) return 'var(--peach)';
+      return 'var(--red)';
+    }
+
+    function kcalColor(kcal) {
+      if (kcal <= 1800) return 'var(--sage)';
+      if (kcal <= 2500) return 'var(--gold)';
+      return 'var(--red)';
+    }
+
+    function renderMealSuggestionCard(title, calories, description) {
+      const imageUrl = mealImages[title] || '/static/images/default-meal.jpg';
+
+      return `
+        <div class="meal-card">
+          <img class="meal-image" src="${imageUrl}" alt="${escapeHtml(title)}">
+          <div class="meal-body">
+            <div class="meal-top">
+              <div class="meal-title">${escapeHtml(title)}</div>
+              <div class="meal-kcal">${escapeHtml(calories)} kcal</div>
+            </div>
+            <div class="meal-desc">${escapeHtml(description)}</div>
+          </div>
         </div>
-      </div>`;
-    setStatus('sp-err', 'Hors ligne');
-    execTimeLbl.textContent = `Échec après ${ms}ms`;
-  }
+      `;
+    }
 
-  // Restaurer bouton
-  runBtn.classList.remove('loading');
-  runBtn.innerHTML = `
-    <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor">
-      <path d="M5 3l9 5-9 5V3z"/>
-    </svg>
-    Exécuter
-    <span class="kbd">⌘↵</span>`;
-}
+    function extractSuggestionData(lines) {
+      const suggestions = [];
+      let suggestionTitle = '';
 
-/* ─── Effacer ─── */
-function clearEditor() {
-  editorEl.value = '';
-  outputArea.innerHTML = `
-    <div class="empty-state">
-      <div class="empty-icon">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-          <circle cx="12" cy="12" r="10"/>
-          <polygon points="10,8 16,12 10,16 10,8"/>
-        </svg>
-      </div>
-      <div class="empty-title">Aucun résultat</div>
-      <div class="empty-sub">Exécutez votre programme pour voir l'analyse nutritionnelle</div>
-    </div>`;
-  setStatus('sp-ready', 'Prêt');
-  execTimeLbl.textContent = '';
-  updateLineNumbers();
-  editorEl.focus();
-  showToast('Éditeur effacé');
-}
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
 
-/* ─── Charger exemple ─── */
-function loadExample() {
-  editorEl.value = EXAMPLE_CODE;
-  updateLineNumbers();
-  editorEl.focus();
-  showToast('✓ Exemple chargé');
-}
+        const headerMatch = line.match(/Suggestions de repas healthy\s*\(([^)]+)\)/i);
+        if (headerMatch) {
+          suggestionTitle = headerMatch[1].replace(/_/g, ' ');
+        }
 
-/* ─── Formater (indentation basique) ─── */
-function formatCode() {
-  const lines  = editorEl.value.split('\n');
-  let depth    = 0;
-  const result = lines.map(line => {
-    const t = line.trim();
-    if (!t) return '';
-    if (/^(Finsi|Sinon)/i.test(t)) depth = Math.max(0, depth - 1);
-    const indented = '    '.repeat(depth) + t;
-    if (/^(Si .+ Alors|Sinon)$/i.test(t)) depth++;
-    return indented;
-  });
-  editorEl.value = result.join('\n');
-  updateLineNumbers();
-  showToast('✓ Code formaté');
-}
+        const mealMatch = line.match(/^\d+\.\s(.+)\s\((\d+)\s*kcal\)/i);
+        if (mealMatch) {
+          const title = mealMatch[1].trim();
+          const calories = mealMatch[2].trim();
 
-/* ─── Init ─── */
-loadExample();
-updateLineNumbers();
-</script>
+          let description = 'Suggestion healthy';
+          if (lines[i + 1] && /^Image\s*:/i.test(lines[i + 1])) {
+            description = lines[i + 1].replace(/^Image\s*:\s*/i, '').trim();
+          }
+
+          suggestions.push({ title, calories, description });
+        }
+      }
+
+      return { suggestionTitle, suggestions };
+    }
+
+    function renderOutput(rawOutput) {
+      const raw = rawOutput || '';
+      const lines = raw.split('\n').map(l => l.trim()).filter(Boolean);
+      const { imc, totalKcal, objective, mealCount } = buildMetrics(lines);
+      const { suggestionTitle, suggestions } = extractSuggestionData(lines);
+
+      const wrapper = document.createElement('div');
+
+      const metrics = document.createElement('div');
+      metrics.className = 'metrics';
+      metrics.innerHTML = `
+        <div class="metric">
+          <div class="metric-label">Indice IMC</div>
+          <div class="metric-value" style="color:${imcColor(imc)}">${imc !== null ? imc.toFixed(2) : '—'}</div>
+          <div class="metric-sub">${imcLabel(imc)}</div>
+          <div class="bar">
+            <div class="bar-fill" style="width:${imc !== null ? Math.min(100, Math.max(6, ((imc - 16) / 24) * 100)) : 8}%; background:${imcColor(imc)}"></div>
+          </div>
+        </div>
+
+        <div class="metric">
+          <div class="metric-label">Calories repas</div>
+          <div class="metric-value" style="color:${kcalColor(totalKcal)}">${totalKcal || '0'} kcal</div>
+          <div class="metric-sub">${mealCount} repas détecté(s)</div>
+          <div class="bar">
+            <div class="bar-fill" style="width:${Math.min(100, (totalKcal / 2500) * 100)}%; background:${kcalColor(totalKcal)}"></div>
+          </div>
+        </div>
+      `;
+      wrapper.appendChild(metrics);
+
+      if (suggestions.length > 0) {
+        const suggestionsSection = document.createElement('div');
+        suggestionsSection.className = 'suggestions-section';
+
+        suggestionsSection.innerHTML = `
+          <div class="section-card">
+            <div class="section-head">
+              <div class="section-title">Suggestions healthy illustrées</div>
+              <div class="section-sub">
+                ${suggestionTitle ? 'Objectif : ' + escapeHtml(suggestionTitle) : 'Repas proposés par NutriLang'}
+              </div>
+            </div>
+            <div class="meal-grid">
+              ${suggestions.map(item => renderMealSuggestionCard(item.title, item.calories, item.description)).join('')}
+            </div>
+          </div>
+        `;
+
+        wrapper.appendChild(suggestionsSection);
+      }
+
+      const report = document.createElement('div');
+      report.className = 'report-card';
+
+      const reportHead = document.createElement('div');
+      reportHead.className = 'report-head';
+      reportHead.innerHTML = `
+        <div>
+          <div class="report-head-title">Rapport d’exécution</div>
+          <div class="report-head-sub">${objective ? 'Objectif détecté : ' + escapeHtml(objective) : 'Analyse détaillée du programme'}</div>
+        </div>
+      `;
+      report.appendChild(reportHead);
+
+      const reportLog = document.createElement('div');
+      reportLog.className = 'report-log';
+
+      const filteredLines = lines.filter(line => !/^Image\s*:/i.test(line));
+
+      if (!filteredLines.length) {
+        reportLog.innerHTML = `
+          <div class="line">
+            <span class="tag">Info</span>
+            <span>Aucune sortie produite.</span>
+          </div>
+        `;
+      } else {
+        for (const line of filteredLines) {
+          const meta = classifyLine(line);
+          const row = document.createElement('div');
+          row.className = 'line';
+          row.innerHTML = `
+            <span class="tag ${meta.className}">${meta.tag}</span>
+            <span>${escapeHtml(line)}</span>
+          `;
+          reportLog.appendChild(row);
+        }
+      }
+
+      report.appendChild(reportLog);
+      wrapper.appendChild(report);
+
+      return wrapper;
+    }
+
+    async function analyser() {
+      if (runBtn.classList.contains('loading')) return;
+
+      const code = editorEl.value.trim();
+      if (!code) {
+        showToast('L’éditeur est vide');
+        return;
+      }
+
+      runBtn.classList.add('loading');
+      runBtn.innerHTML = `Exécution...`;
+      statusText.textContent = 'Analyse en cours...';
+      execTimeLabel.textContent = 'Traitement...';
+
+      const t0 = performance.now();
+
+      try {
+        const response = await fetch('/execute', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ code })
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
+
+        const data = await response.json();
+        const output = data.output || '';
+        const elapsed = Math.round(performance.now() - t0);
+
+        outputArea.innerHTML = '';
+        outputArea.appendChild(renderOutput(output));
+
+        const hasError = /erreur|error/i.test(output);
+        statusText.textContent = hasError ? 'Erreur détectée' : 'Exécution réussie';
+        execTimeLabel.textContent = `Exécuté en ${elapsed} ms`;
+
+        showToast(hasError ? 'Exécution terminée avec erreur' : 'Exécution réussie');
+      } catch (error) {
+        const elapsed = Math.round(performance.now() - t0);
+
+        outputArea.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-card">
+              <div class="empty-emoji">⚠️</div>
+              <div class="empty-title">Serveur inaccessible</div>
+              <div class="empty-sub">
+                Vérifie que Flask tourne avec <strong>python server.py</strong> puis réessaie.
+              </div>
+            </div>
+          </div>
+        `;
+
+        statusText.textContent = 'Hors ligne';
+        execTimeLabel.textContent = `Échec après ${elapsed} ms`;
+        showToast('Serveur inaccessible');
+      }
+
+      runBtn.classList.remove('loading');
+      runBtn.innerHTML = `Exécuter <span class="kbd">Ctrl + Entrée</span>`;
+    }
+
+    insertExample('full');
+    updateLineNumbers();
+    updateCursorPosition();
+  </script>
 </body>
 </html>
